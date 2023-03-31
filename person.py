@@ -1,11 +1,9 @@
 from __future__ import annotations
 import random
 from typing import Optional
-
 SUSCEPTIBLE = 1
 INFECTED = 2
 RECOVERED = 3
-
 
 class Person:
     family_id: int
@@ -14,9 +12,9 @@ class Person:
     move: [int, int]
     moving_distance: float
     speed: float
-    close_contact: dict[Person:Edge]
-    family: dict[Person:Edge]
-    infection_frame: Optional[int]  # the number of frame that this
+    close_contact: dict[Person: Edge]
+    family: dict[Person: Edge]
+    infection_frame: Optional[int] # the number of frame that this
 
     # initial location could be list of list as keeps list of moves [[0,0], [3,10]] initial should be starting point example 0,0
     def __init__(self, x: int, y: int, speed: float, family_id: int):
@@ -27,15 +25,15 @@ class Person:
         self.location = [x, y]
         self.speed = speed
         self.move = [0, 0]
+        self.close_contact = {}
         self.infection_frame = None
+
 
     def make_move(self, time_elapsed: float) -> None:
         """Makes random moves for person in a Brownian motion by updating location"""
         x, y = self.location
-        dx, dy = random.uniform(-self.moving_distance,
-                                self.moving_distance), random.uniform(
-                                    -self.moving_distance,
-                                    self.moving_distance)
+        dx, dy = random.uniform(-self.moving_distance, self.moving_distance), random.uniform(-self.moving_distance,
+                                                                                             self.moving_distance)
         elapsed_seconds = time_elapsed / 10  # divide by speed of 10 frames per second
         distance_moved = elapsed_seconds * self.speed
         x += dx * distance_moved
@@ -56,7 +54,7 @@ class Person:
         """
         person.state is SUSCEPTIBLE
         """
-        self.close_contact.add(person)
+        self.close_contact[person] = Edge(self, person)
 
 
 class Edge:

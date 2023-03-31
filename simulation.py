@@ -12,21 +12,22 @@ class Simulation:
     family_size: int
     frame_num: int
     infected: set
-    recover_period: int  # in second
+    recover_period: int # in second
 
-    def __init__(self, num_family: int, family_size: int, speed: float,
-                 recover_period, initial_infected: int):
+    def __init__(self, num_family: int, family_size: int, speed: float, recover_period, initial_infected: int):
         """
         Initialize the simulation class
         Preconditions:
             - initial_infected <= num_family * family_size
         """
-        self.close_contact_distance = 10
+        self.close_contact_distance = 1000
         self.recover_period = recover_period
         self.simu_graph = Graph()
         self.infected = set()
         self.frame_num = 0
-        for i in range(1, num_family + 1):
+        self.num_family = num_family
+        self.family_size = family_size
+        for i in range(1, num_family+1):
             added = set()
             # Create a clique between this family, and add each person in the family to the suspectible
             # set in the graph
@@ -42,6 +43,7 @@ class Simulation:
         # Randomly choose initial_infected number of people to be infected
         for _ in range(initial_infected):
             to_infect = self.simu_graph.susceptible.pop()
+            to_infect.infection_frame = 0
             self.simu_graph.infected.add(to_infect)
 
     def frame(self):
@@ -51,9 +53,8 @@ class Simulation:
                 person.state = INFECTED
                 person.infection_frame = self.frame_num
                 self.simu_graph.infected.add(person)
-            self.simu_graph.update_edge(self.frame_num, self.recover_period,
-                                        self.close_contact_distance)
-            self.infected = self.simu_graph.make_infection(self.frame_num)
+            self.simu_graph.update_edge(self.frame_num, self.recover_period, self.close_contact_distance)
+            # self.infected = self.simu_graph.make_infection(self.frame_num)
         else:
             print('Done')
 

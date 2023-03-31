@@ -107,7 +107,7 @@ class InputButton(Button):
 
     def __init__(self, x: int, y: int, w: int, h: int, text: str,
                  text_color: tuple[int, int,
-                                   int], background_c: tuple[int, int, int],
+                 int], background_c: tuple[int, int, int],
                  hover: bool, input_type: str, bounds: tuple[float | int,
                                                              float | int]):
         """Initialize with the given information"""
@@ -232,8 +232,7 @@ def draw_node(position: tuple[int, int], colour: tuple[int, int, int]) -> None:
     py.draw.circle(screen, colour, position, NODE_RADIUS)
 
 
-def draw_edge(position1: tuple[int, int], position2: tuple[int, int],
-              colour: tuple[int, int, int]) -> None:
+def draw_edge(position1: tuple[int, int], position2: tuple[int, int], colour: tuple[int, int, int]) -> None:
     """Draws an edge between the two points
 
     Preconditions:
@@ -306,6 +305,7 @@ def main():
     # TODO: Implement this using the what the user inputs
     stacked_graph = StackedAreaGraph(temp_population)
     simulation = sim(5, 10, 5, 100, 10)
+    simulation.frame()
     main_graph = simulation.simu_graph
 
     done = False
@@ -357,7 +357,7 @@ def main():
             # updates bounds for initial infected
             if b is inital_infected_b:
                 b.bounds = (1, int(fam_pop_b.text) * int(fam_b.text) if
-                            fam_pop_b.text != '' and fam_b.text != '' else 1)
+                fam_pop_b.text != '' and fam_b.text != '' else 1)
                 if b.text != '':
                     b.text = str(
                         min(
@@ -366,7 +366,17 @@ def main():
                             fam_pop_b.text != '' and fam_b.text != '' else 1))
             b.update()
 
-        # Update the main graph
+        # update main graph edges
+        for i in main_graph.susceptible:
+            for p in i.close_contact:
+                draw_edge((i.location[0] + 25, i.location[1] + 25), (p.location[0] + 25, p.location[1] + 25), WHITE)
+        for j in main_graph.infected:
+            for m in j.close_contact:
+                draw_edge((j.location[0] + 25, j.location[1] + 25), (m.location[0] + 25, m.location[1] + 25), WHITE)
+        for k in main_graph.susceptible:
+            for n in k.close_contact:
+                draw_edge((k.location[0] + 25, k.location[1] + 25), (n.location[0] + 25, n.location[1] + 25), WHITE)
+        # Update the main graph nodes
         for i in main_graph.susceptible:
             x = i.location[0]
             y = i.location[1]
