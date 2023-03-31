@@ -27,6 +27,8 @@ class Simulation:
         self.frame_num = 0
         self.num_family = num_family
         self.family_size = family_size
+
+        person_id = 0
         for i in range(1, num_family+1):
             added = set()
             # Create a clique between this family, and add each person in the family to the suspectible
@@ -34,7 +36,8 @@ class Simulation:
             for _ in range(family_size):
                 x = random.randint(0, 500)
                 y = random.randint(0, 500)
-                person = Person(x, y, speed, i)
+                person = Person(x, y, speed, i, person_id)
+                person_id += 1
                 for one in added:
                     self.simu_graph.build_family_edge(one, person)
                 added.add(person)
