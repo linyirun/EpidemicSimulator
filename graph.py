@@ -2,7 +2,7 @@ from __future__ import annotations
 from person import Person, INFECTED, SUSCEPTIBLE, RECOVERED
 import random
 
-
+# Yo
 class Graph:
     infected: set[Person]
     susceptible: set[Person]
