@@ -1,5 +1,5 @@
 from __future__ import annotations
-from person_edge import Person, INFECTED, SUSCEPTIBLE, RECOVERED, Edge
+from person_edge import Person, INFECTED, SUSCEPTIBLE, RECOVERED, Edge, CONTACT, FAMILY
 import random
 
 class Graph:
@@ -16,7 +16,7 @@ class Graph:
         self.edges = set()
 
     def build_family_edge(self, person1: Person, person2: Person) -> None:
-        edge = Edge(person1, person2)
+        edge = Edge(person1, person2, FAMILY)
         person1.family[person2.id] = edge
         person2.family[person1.id] = edge
 
@@ -33,5 +33,11 @@ class Graph:
                             person.location[1] - patient.location[1]) ** 2) ** 0.5 < close_contact_distance:
                         patient.create_close_contact_edge(person)
 
-    def make_infection(self):
+    def make_infection(self, close_contact_distance: int) -> set[Person]:
         '''return all the newly infected people'''
+        newly_infected = set()
+        for patient in self.infected:
+            for edge in patient.close_contact.values():
+                if edge.infect(close_contact_distance) is not None:
+                    newly_infected.add(edge.infect(close_contact_distance))
+        return newly_infected

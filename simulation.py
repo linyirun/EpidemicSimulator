@@ -67,7 +67,7 @@ class Simulation:
                 person.infection_frame = self.frame_num
                 self.simu_graph.infected.add(person)
             self.simu_graph.update_edge(self.frame_num, self.recover_period, self.close_contact_distance)
-            #self.infected = self.simu_graph.make_infection(self.frame_num)
+            self.infected = self.simu_graph.make_infection(self.close_contact_distance)
         else:
             print('Done')
 
