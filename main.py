@@ -239,12 +239,12 @@ class StatsTable:
     [family id, # uninfected, # infected, # recovered]
     - num_families: the number of families in the current simulation
     - graph: the simulation graph
-    - current_row: the index of the first row that we are displaying
+    - current_top_row: the index of the first row that we are displaying
     """
     data_table: list[list[int, int, int, int]]
     num_families: int
     graph: Graph
-    current_row: int
+    current_top_row: int
 
     pos_x: int = 600
     pos_y: int = 25
@@ -255,15 +255,13 @@ class StatsTable:
         # TODO: add graph into this class
         """Initializes the stats table"""
         self.num_families = num_families
+        self.current_top_row = 0
         # self.graph = g
 
         # Initialize the data table with num_families rows with 4 elements each row
         self.data_table = []
         for _ in range(num_families):
             self.data_table.append([0, 0, 0, 0])
-
-        # Calculate the initial values for each family:
-        # for family_id in self.graph.
 
     def update(self) -> None:
         """Updates self by:
@@ -272,7 +270,18 @@ class StatsTable:
         # Drawing the table background
         stats.fill(SKY_BLUE)
         screen.blit(stats, (self.pos_x, self.pos_y))
+        # Drawing header
+        self.draw_center_text('Family ID', 20, BLACK, 0, 0)
+        self.draw_center_text('Uninfected', 20, BLACK, 0, 1)
+        self.draw_center_text('Infected', 20, BLACK, 0, 2)
+        self.draw_center_text('Recovered', 20, BLACK, 0, 3)
 
+
+
+
+
+
+        # Drawing lines
         for i in range(0, 6):
             self.draw_line_in_table((self.pos_x, self.pos_y + STATS_H // 5 * i),
                                     (self.pos_x + STATS_W, self.pos_y + STATS_H // 5 * i))
@@ -285,11 +294,22 @@ class StatsTable:
         self.draw_line_in_table((self.pos_x + STATS_W, self.pos_y),
                                 (self.pos_x + STATS_W, self.pos_y + STATS_H))
 
+    def draw_center_text(self, text: str, font_size: int, font_color: tuple[int, int, int], row: int, col: int) -> None:
+        """Draws text in the center of a cell in the table"""
+        width_cell = STATS_W // 4
+        height_cell = STATS_H // 5
+        comic_sans = py.font.SysFont('arial', font_size)
+        text_render = comic_sans.render(text, True, font_color)
+        text_rect = text_render.get_rect(center=((width_cell / 2) + self.pos_x + col * width_cell,
+                                                 (height_cell / 2) + self.pos_y + row * height_cell))
+        screen.blit(text_render, text_rect)
+
     def draw_line_in_table(self, position: tuple[int, int], position2: tuple[int, int]) -> None:
         """Draws a line, starting from position to the end of the table
         """
         # end_position = (position[0] + STATS_W, position[1])
         py.draw.line(screen, self.line_color, position, position2, width=self.border_line_width)
+
 
 def draw_node(position: tuple[int, int], colour: tuple[int, int, int]) -> None:
     """Draws a node at the given position
