@@ -14,6 +14,7 @@ class Simulation:
     frame_num: int
     infected: set
     recover_period: int # in second
+    id_to_family: dict[int, list[Person]]
 
     def __init__(self, num_family: int, family_size: int, speed: float, recover_period, initial_infected: int):
         """
@@ -28,10 +29,11 @@ class Simulation:
         self.frame_num = 0
         self.num_family = num_family
         self.family_size = family_size
+        self.id_to_family = {}
 
         person_id = 0
         for i in range(1, num_family+1):
-            added = set()
+            added = []
             # Create a clique between this family, and add each person in the family to the suspectible
             # set in the graph
             for _ in range(family_size):
@@ -41,9 +43,10 @@ class Simulation:
                 person_id += 1
                 for one in added:
                     self.simu_graph.build_family_edge(one, person)
-                added.add(person)
+                added.append(person)
                 self.simu_graph.susceptible.add(person)
                 self.simu_graph.id_to_person[person.id] = person
+            self.id_to_family[i] = added
 
         # Randomly choose initial_infected number of people to be infected
         for _ in range(initial_infected):
