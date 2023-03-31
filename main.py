@@ -309,7 +309,7 @@ def main():
     temp_population = 600
     # TODO: Implement this using the what the user inputs
     stacked_graph = StackedAreaGraph(temp_population)
-    simulation = sim(25, 1, 5, 100, 10)
+    simulation = sim(15, 1, 5, 100, 1)
     simulation.frame()
     main_graph = simulation.simu_graph
 
@@ -396,8 +396,7 @@ def main():
         for family_id in range(1, simulation.num_family + 1):
             for person in simulation.id_to_family[family_id]:
                 if person.state != INFECTED:
-                    color_val = min(205 // simulation.num_family * family_id + 50, 255)
-                    draw_node((person.location[0] + 25, person.location[1] + 25), (color_val, color_val, color_val))
+                    draw_node((person.location[0] + 25, person.location[1] + 25), COLORS[family_id - 1])
 
         update_text_and_graphs()
 
