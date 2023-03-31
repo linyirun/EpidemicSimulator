@@ -10,6 +10,7 @@ from collections import deque
 import pygame as py
 from simulation import Simulation as sim
 from person_edge import INFECTED, SUSCEPTIBLE, RECOVERED
+from graph import Graph
 import random
 import math
 
@@ -182,10 +183,10 @@ class StackedAreaGraph:
         """
         self._data.popleft()
 
-        # new_frame = (0, self._total_population, 0)
+        new_frame = (0, self._total_population, 0)
 
         # TODO: This is for testing purposes
-        new_frame = (self._total_population - self._i, self._i, 0)
+        # new_frame = (self._total_population - self._i, self._i, 0)
 
         self._data.append(new_frame)
 
@@ -227,6 +228,68 @@ class StackedAreaGraph:
         py.draw.line(screen, color, position,
                      (position[0], position[1] + height), 1)
 
+
+class StatsTable:
+    """A class representing the stats table
+    Displays 5 rows: first row is the header, the other rows will be the data for each family
+    Displays 4 columns
+
+    Instance Attributes:
+    - data_table: stores the data for each family: it has num_families rows, and each row has 4 elements, indicating:
+    [family id, # uninfected, # infected, # recovered]
+    - num_families: the number of families in the current simulation
+    - graph: the simulation graph
+    - current_row: the index of the first row that we are displaying
+    """
+    data_table: list[list[int, int, int, int]]
+    num_families: int
+    graph: Graph
+    current_row: int
+
+    pos_x: int = 600
+    pos_y: int = 25
+    line_color: tuple[int, int, int] = (222, 222, 222)
+    border_line_width: int = 3
+
+    def __init__(self, num_families: int) -> None:
+        # TODO: add graph into this class
+        """Initializes the stats table"""
+        self.num_families = num_families
+        # self.graph = g
+
+        # Initialize the data table with num_families rows with 4 elements each row
+        self.data_table = []
+        for _ in range(num_families):
+            self.data_table.append([0, 0, 0, 0])
+
+        # Calculate the initial values for each family:
+        # for family_id in self.graph.
+
+    def update(self) -> None:
+        """Updates self by:
+        Recalculating values for each family, then redrawing the table with updated values
+        """
+        # Drawing the table background
+        stats.fill(SKY_BLUE)
+        screen.blit(stats, (self.pos_x, self.pos_y))
+
+        for i in range(0, 6):
+            self.draw_line_in_table((self.pos_x, self.pos_y + STATS_H // 5 * i),
+                                    (self.pos_x + STATS_W, self.pos_y + STATS_H // 5 * i))
+
+        # Draw the vertical lines for the border
+        for i in range(0, 4):
+            self.draw_line_in_table((self.pos_x + STATS_W // 4 * i, self.pos_y),
+                                    (self.pos_x + STATS_W // 4 * i, self.pos_y + STATS_H))
+        # Draw the final vertical line
+        self.draw_line_in_table((self.pos_x + STATS_W, self.pos_y),
+                                (self.pos_x + STATS_W, self.pos_y + STATS_H))
+
+    def draw_line_in_table(self, position: tuple[int, int], position2: tuple[int, int]) -> None:
+        """Draws a line, starting from position to the end of the table
+        """
+        # end_position = (position[0] + STATS_W, position[1])
+        py.draw.line(screen, self.line_color, position, position2, width=self.border_line_width)
 
 def draw_node(position: tuple[int, int], colour: tuple[int, int, int]) -> None:
     """Draws a node at the given position
@@ -270,8 +333,6 @@ def update_text_and_graphs() -> None:
     second_block = py.Rect(600, 300, STACKED_GRAPH_LENGTH,
                            STACKED_GRAPH_HEIGHT)
     py.draw.rect(screen, SKY_BLUE, second_block, 1)
-    stats.fill(SKY_BLUE)
-    screen.blit(stats, (600, 25))
     draw_text(120, 580, 'FAMILY SIZE', 15, WHITE)
     draw_text(140, 530, 'FAMILIES', 15, WHITE)
     draw_text(345, 580, 'INFECTIVITY', 15, WHITE)
@@ -306,10 +367,14 @@ def main():
     # Holds the currently active button
     active_button = None
 
+    # for testing purposes
     temp_population = 600
+    num_families = int(fam_b.text)
     # TODO: Implement this using the what the user inputs
     stacked_graph = StackedAreaGraph(temp_population)
-    simulation = sim(15, 1, 5, 100, 1)
+    stats_table = StatsTable(num_families)
+
+    simulation = sim(num_families, 1, 5, 100, 1)
     simulation.frame()
     main_graph = simulation.simu_graph
 
@@ -401,6 +466,7 @@ def main():
         update_text_and_graphs()
 
         stacked_graph.update()
+        stats_table.update()
 
         # nodes = []
         # NODES = 50
