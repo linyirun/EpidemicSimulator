@@ -4,6 +4,7 @@ from graph import Graph
 from person import Person, INFECTED, SUSCEPTIBLE, RECOVERED
 import timeit
 
+NODE_RADIUS = 10
 
 class Simulation:
     simu_graph: Graph
@@ -20,7 +21,7 @@ class Simulation:
         Preconditions:
             - initial_infected <= num_family * family_size
         """
-        self.close_contact_distance = 1000
+        self.close_contact_distance = 100
         self.recover_period = recover_period
         self.simu_graph = Graph()
         self.infected = set()
@@ -34,8 +35,8 @@ class Simulation:
             # Create a clique between this family, and add each person in the family to the suspectible
             # set in the graph
             for _ in range(family_size):
-                x = random.randint(0, 500)
-                y = random.randint(0, 500)
+                x = random.randint(NODE_RADIUS, 500 - NODE_RADIUS)
+                y = random.randint(NODE_RADIUS, 500 - NODE_RADIUS)
                 person = Person(x, y, speed, i, person_id)
                 person_id += 1
                 for one in added:
