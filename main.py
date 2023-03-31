@@ -304,7 +304,7 @@ def main():
     temp_population = 600
     # TODO: Implement this using the what the user inputs
     stacked_graph = StackedAreaGraph(temp_population)
-    simulation = sim(5, 10, 5, 100, 10)
+    simulation = sim(25, 1, 5, 100, 10)
     simulation.frame()
     main_graph = simulation.simu_graph
 
@@ -367,21 +367,17 @@ def main():
             b.update()
 
         # update main graph edges
-        for i in main_graph.susceptible:
-            for p in i.close_contact:
-                x = main_graph.id_to_person[p].location[0]
-                y = main_graph.id_to_person[p].location[1]
-                draw_edge((i.location[0] + 25, i.location[1] + 25), (x + 25, y + 25), WHITE)
         for j in main_graph.infected:
             for m in j.close_contact:
                 x = main_graph.id_to_person[m].location[0]
                 y = main_graph.id_to_person[m].location[1]
                 draw_edge((j.location[0] + 25, j.location[1] + 25), (x + 25, y + 25), WHITE)
-        for k in main_graph.susceptible:
-            for n in k.close_contact:
-                x = main_graph.id_to_person[n].location[0]
-                y = main_graph.id_to_person[n].location[1]
-                draw_edge((k.location[0] + 25, k.location[1] + 25), (x + 25, y + 25), WHITE)
+        for k in main_graph.id_to_person.values():
+            for n in main_graph.id_to_person.values():
+                if k.family_id == n.family_id:
+                    x = n.location[0]
+                    y = n.location[1]
+                    draw_edge((k.location[0] + 25, k.location[1] + 25), (x + 25, y + 25), WHITE)
         # Update the main graph nodes
         for i in main_graph.susceptible:
             x = i.location[0]

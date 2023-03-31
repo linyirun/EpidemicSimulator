@@ -1,7 +1,7 @@
 from __future__ import annotations
 import random
 from graph import Graph
-from person import Person, INFECTED, SUSCEPTIBLE, RECOVERED
+from person_edge import Person, INFECTED, SUSCEPTIBLE, RECOVERED
 import timeit
 
 NODE_RADIUS = 10

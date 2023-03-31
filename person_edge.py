@@ -21,7 +21,7 @@ class Person:
     def __init__(self, x: int, y: int, speed: float, family_id: int, id: int):
         """Status: 0 for susceptable, 1 for infected and 2 for recovered."""
         self.state = SUSCEPTIBLE
-        self.family = set()
+        self.family = {}
         self.family_id = family_id
         self.location = [x, y]
         self.speed = speed
