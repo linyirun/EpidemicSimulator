@@ -15,11 +15,13 @@ import math
 
 # Colours
 BLACK = (0, 0, 0)
+# Edge Colour
 WHITE = (255, 255, 255)
+# Infected Colour
 RED = (255, 0, 0)
-YELLOW = (255, 255, 0)
-BLUE = (0, 0, 255)
+# Node Colours (20 of them, 1 per family)
 SKY_BLUE = (95, 165, 228)
+
 
 # Parameter Constants
 SCREEN_WIDTH = 1200
@@ -282,10 +284,10 @@ def main():
     # Initializes buttons
     run_b = Button(25, 530, 70, 25, 'RUN', WHITE, RED, True)
     fam_pop_b = InputButton(215, 580, 60, 25, '100', BLACK, WHITE, True, 'int',
-                            (1, 1000))
+                            (1, 50))
     regen_b = Button(25, 600, 70, 25, 'REGENERATE', WHITE, RED, True)
     fam_b = InputButton(215, 530, 60, 25, '2', BLACK, WHITE, True, 'int',
-                        (1, 1000))
+                        (1, 20))
     infect_b = InputButton(445, 580, 60, 25, '0.5', BLACK, WHITE, True,
                            'float', (0.0, 1.0))
     inital_infected_b = InputButton(445, 530, 60, 25, '1', BLACK, WHITE, True,
