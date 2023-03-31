@@ -53,6 +53,7 @@ class Simulation:
             to_infect = self.simu_graph.susceptible.pop()
             to_infect.infection_frame = 0
             self.simu_graph.infected.add(to_infect)
+            to_infect.state = INFECTED
 
     def frame(self):
         self.frame_num += 1

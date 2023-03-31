@@ -9,6 +9,7 @@ from typing import Optional
 from collections import deque
 import pygame as py
 from simulation import Simulation as sim
+from person_edge import INFECTED, SUSCEPTIBLE, RECOVERED
 import random
 import math
 
@@ -379,10 +380,6 @@ def main():
                     y = n.location[1]
                     draw_edge((k.location[0] + 25, k.location[1] + 25), (x + 25, y + 25), WHITE)
         # Update the main graph nodes
-        for i in main_graph.susceptible:
-            x = i.location[0]
-            y = i.location[1]
-            draw_node((x + 25, y + 25), (220, 220, 220))
         for j in main_graph.infected:
             x = j.location[0]
             y = j.location[1]
@@ -391,6 +388,13 @@ def main():
             x = k.location[0]
             y = k.location[1]
             draw_node((x + 25, y + 25), (0, 0, 255))
+
+        for family_id in range(1, simulation.num_family + 1):
+            for person in simulation.id_to_family[family_id]:
+                if person.state != INFECTED:
+                    color_val = min(205 // simulation.num_family * family_id + 50, 255)
+                    draw_node((person.location[0] + 25, person.location[1] + 25), (color_val, color_val, color_val))
+
 
         update_text_and_graphs()
 
