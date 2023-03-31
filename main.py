@@ -91,7 +91,7 @@ class Button:
                                                  (self.h / 2) + self.y))
         background = py.Surface((self.w, self.h))
         if self.hover and self.x <= a <= self.x + self.w and self.y <= b <= self.y + self.h:
-            background.fill(BLUE)
+            background.fill(SKY_BLUE)
         else:
             background.fill(self.background_color)
         screen.blit(background, (self.x, self.y))
@@ -285,11 +285,11 @@ def main():
     py.font.init()
     # Initializes buttons
     run_b = Button(25, 530, 70, 25, 'RUN', WHITE, RED, True)
-    fam_pop_b = InputButton(215, 580, 60, 25, '100', BLACK, WHITE, True, 'int',
-                            (1, 50))
+    fam_pop_b = InputButton(215, 580, 60, 25, '25', BLACK, WHITE, True, 'int',
+                            (1, 51))
     regen_b = Button(25, 600, 70, 25, 'REGENERATE', WHITE, RED, True)
     fam_b = InputButton(215, 530, 60, 25, '2', BLACK, WHITE, True, 'int',
-                        (1, 20))
+                        (1, 21))
     infect_b = InputButton(445, 580, 60, 25, '0.5', BLACK, WHITE, True,
                            'float', (0.0, 1.0))
     inital_infected_b = InputButton(445, 530, 60, 25, '1', BLACK, WHITE, True,
