@@ -6,18 +6,19 @@ INFECTED = 2
 RECOVERED = 3
 
 class Person:
+    id: int
     family_id: int
     state: SUSCEPTIBLE | INFECTED | RECOVERED
     location: list[int, int]
     move: [int, int]
     moving_distance: float
     speed: float
-    close_contact: dict[Person: Edge]
-    family: dict[Person: Edge]
+    close_contact: dict[int: Edge]
+    family: dict[int: Edge]
     infection_frame: Optional[int] # the number of frame that this
 
     # initial location could be list of list as keeps list of moves [[0,0], [3,10]] initial should be starting point example 0,0
-    def __init__(self, x: int, y: int, speed: float, family_id: int):
+    def __init__(self, x: int, y: int, speed: float, family_id: int, id: int):
         """Status: 0 for susceptable, 1 for infected and 2 for recovered."""
         self.state = SUSCEPTIBLE
         self.family = set()
@@ -27,7 +28,7 @@ class Person:
         self.move = [0, 0]
         self.close_contact = {}
         self.infection_frame = None
-
+        self.id = id
 
     def make_move(self, time_elapsed: float) -> None:
         """Makes random moves for person in a Brownian motion by updating location"""
@@ -54,7 +55,7 @@ class Person:
         """
         person.state is SUSCEPTIBLE
         """
-        self.close_contact[person] = Edge(self, person)
+        self.close_contact[person.id] = Edge(self, person)
 
 
 class Edge:
