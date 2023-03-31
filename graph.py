@@ -34,7 +34,7 @@ class Graph:
                         patient.create_close_contact_edge(person)
 
     def make_infection(self, close_contact_distance: int) -> set[Person]:
-        '''return all the newly infected people'''
+        """return all the newly infected people"""
         newly_infected = set()
         for patient in self.infected:
             for edge in patient.close_contact.values():

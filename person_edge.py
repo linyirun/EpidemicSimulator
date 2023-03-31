@@ -94,8 +94,8 @@ class Edge:
 
     def get_infected_person(self):
         """
-        - (self.person1.state is INFECTED and self.person2 is not INFECTED) or
-         (self.person1.state is not INFECTED and self.person2 is INFECTED)
+        - (self.person1.state is INFECTED and self.person2 is not INFECTED) or \
+            (self.person1.state is not INFECTED and self.person2 is INFECTED)
         """
         if self.person1.state is INFECTED and self.person2 is not INFECTED:
             return self.person2
