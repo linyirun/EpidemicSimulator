@@ -42,6 +42,7 @@ class Simulation:
                     self.simu_graph.build_family_edge(one, person)
                 added.add(person)
                 self.simu_graph.susceptible.add(person)
+                self.simu_graph.id_to_person[person.id] = person
 
         # Randomly choose initial_infected number of people to be infected
         for _ in range(initial_infected):

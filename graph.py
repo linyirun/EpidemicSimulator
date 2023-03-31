@@ -2,16 +2,17 @@ from __future__ import annotations
 from person import Person, INFECTED, SUSCEPTIBLE, RECOVERED
 import random
 
-# Yo
 class Graph:
     infected: set[Person]
     susceptible: set[Person]
     recovered = set[Person]
+    id_to_person: dict[int, Person]
 
     def __init__(self) -> None:
         self.infected = set()
         self.susceptible = set()
         self.recovered = set()
+        self.id_to_person = {}
         self.edges = set()
 
     def build_family_edge(self, person1: Person, person2: Person) -> None:
