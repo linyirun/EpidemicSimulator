@@ -58,12 +58,16 @@ class Simulation:
     def frame(self):
         self.frame_num += 1
         if len(self.simu_graph.recovered) < self.num_family * self.family_size:
+            #move
+            # for person in self.simu_graph.infected | self.simu_graph.susceptible | self.simu_graph.recovered:
+            #     person.make_move(10.0)
+            #infect
             for person in self.infected:
                 person.state = INFECTED
                 person.infection_frame = self.frame_num
                 self.simu_graph.infected.add(person)
             self.simu_graph.update_edge(self.frame_num, self.recover_period, self.close_contact_distance)
-            # self.infected = self.simu_graph.make_infection(self.frame_num)
+            #self.infected = self.simu_graph.make_infection(self.frame_num)
         else:
             print('Done')
 
