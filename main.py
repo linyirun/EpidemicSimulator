@@ -21,7 +21,9 @@ WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 # Node Colours (20 of them, 1 per family)
 SKY_BLUE = (95, 165, 228)
-
+COLORS = [(0, 255, 0), (0, 0, 255), (255, 255, 0), (0, 255, 255), (255, 0, 255), (192, 192, 192), (128, 128, 128),
+          (128, 0, 0), (128, 128, 0), (0, 128, 0), (128, 0, 128), (0, 128, 128), (0, 0, 128), (205, 133, 63),
+          (255, 250, 240), (230, 230, 250), (123, 104, 238), (100, 149, 237), (175, 238, 238)]
 
 # Parameter Constants
 SCREEN_WIDTH = 1200
@@ -396,7 +398,6 @@ def main():
                 if person.state != INFECTED:
                     color_val = min(205 // simulation.num_family * family_id + 50, 255)
                     draw_node((person.location[0] + 25, person.location[1] + 25), (color_val, color_val, color_val))
-
 
         update_text_and_graphs()
 
