@@ -33,6 +33,7 @@ STATS_H, STATS_W = 200, 575
 STACKED_GRAPH_LENGTH, STACKED_GRAPH_HEIGHT = 575, 225
 NODE_RADIUS = 10
 LINE_WIDTH = 1
+FPS = 24
 TITLE = 'CSC111 Project'
 
 # Pygame surface initialization
@@ -401,8 +402,8 @@ def main():
     inital_infected_b = InputButton(445, 530, 60, 25, '1', BLACK, WHITE, True,
                                     'int',
                                     (1, int(fam_pop_b.text) * int(fam_b.text)))
-
     stop_b = Button(25, 565, 70, 25, 'STOP', WHITE, RED, True)
+
 
     # Local variables
     # this button list is needed for the event tracking
@@ -419,7 +420,7 @@ def main():
     stacked_graph = StackedAreaGraph(temp_population)
     stats_table = StatsTable(num_families)
 
-    simulation = sim(num_families, 1, 5, 100, 3)
+    simulation = sim(num_families, 1, 5, 100, 3, 100, FPS, False)
     simulation.frame()
     main_graph = simulation.simu_graph
 
@@ -530,7 +531,7 @@ def main():
         #         draw_edge(nodes[i], nodes[j])
 
         py.display.flip()
-        clock.tick(24)
+        clock.tick(FPS)
 
     py.quit()
 

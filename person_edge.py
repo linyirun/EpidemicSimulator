@@ -39,29 +39,32 @@ class Person:
     state: SUSCEPTIBLE | INFECTED | RECOVERED
     location: list[int, int]
     move: [int, int]
-    moving_distance: float
     speed: float
     close_contact: dict[int: Edge]
     family: dict[int: Edge]
 
     # initial location could be list of list as keeps list of moves [[0,0], [3,10]] initial should be starting point example 0,0
-    def __init__(self, x: int, y: int, moving_distance: float, family_id: int, id: int):
-        """Status: 0 for susceptable, 1 for infected and 2 for recovered."""
+    def __init__(self, x: int, y: int, speed: int, family_id: int, id: int, fps: int):
+        """Status: 0 for susceptable, 1 for infected and 2 for recovered.
+
+        Preconditions:
+        - speed >= 1
+        """
         self.state = SUSCEPTIBLE
         self.family = {}
         self.family_id = family_id
         self.location = [x, y]
-        self.moving_distance = moving_distance
+        self.speed = speed
         self.close_contact = {}
         self.infection_frame = Optional[int]
         self.id = id
-        moving_value = moving_distance / 2**0.5
+        moving_value = speed / 2**0.5
         direction = [-1, 1]
         self.move = [int(random.choice(direction)*moving_value), int(random.choice(direction)*moving_value)]
-        self.speed = 96
-        self.frames_per_second = 24
+        self.speed = speed * fps
+        self.frames_per_second = fps
 
-    def make_move(self) -> None:
+    def make_move_brownian(self) -> None:
         """Makes random moves for person in a Brownian motion by updating location"""
         x, y = self.location
         dx, dy = random.uniform(-1, 1), random.uniform(-1, 1)
@@ -84,6 +87,23 @@ class Person:
         self.last_move = [dx, dy]
         self.location = [x, y]
         # self.last_move_time = time.time()
+
+    def make_move_person(self):
+        next_x = self.location[0] + self.move[0]
+        next_y = self.location[1] + self.move[1]
+        if next_x > 490:
+            self.move[0] = -self.move[0]
+            next_x = 490 - (next_x - 490)
+        if next_x < 10:
+            self.move[0] = -self.move[0]
+            next_x = 10 + (10 - next_x)
+        if next_y > 490:
+            self.move[1] = -self.move[1]
+            next_y = 490 - (next_y - 490)
+        if next_y < 10:
+            self.move[1] = -self.move[1]
+            next_y = 10 + (10 - next_y)
+        self.location[0], self.location[1] = next_x, next_y
 
     def create_close_contact_edge(self, person: Person):
         """

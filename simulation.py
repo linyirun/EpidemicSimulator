@@ -6,6 +6,7 @@ import timeit
 
 NODE_RADIUS = 10
 
+
 class Simulation:
     simu_graph: Graph
     close_contact_distance: int  # in pixles
@@ -13,33 +14,38 @@ class Simulation:
     family_size: int
     frame_num: int
     infected: set
-    recover_period: int # in second
+    recover_period: int  # in second
+    brownian: bool
     id_to_family: dict[int, list[Person]]
+    fps: int
 
-    def __init__(self, num_family: int, family_size: int, speed: float, recover_period: int, initial_infected: int):
+    def __init__(self, num_family: int, family_size: int, speed: int, recover_period: int, initial_infected: int,
+                 close_contact_distance: int, fps: int, brownian: bool = False):
         """
         Initialize the simulation class
         Preconditions:
             - initial_infected <= num_family * family_size
         """
-        self.close_contact_distance = 100
         self.recover_period = recover_period
         self.simu_graph = Graph()
         self.infected = set()
         self.frame_num = 0
         self.num_family = num_family
         self.family_size = family_size
+        self.close_contact_distance = close_contact_distance
+        self.brownian = brownian
+        self.fps = fps
         self.id_to_family = {}
 
         person_id = 0
-        for i in range(1, num_family+1):
+        for i in range(1, num_family + 1):
             added = []
             # Create a clique between this family, and add each person in the family to the suspectible
             # set in the graph
             for _ in range(family_size):
                 x = random.randint(NODE_RADIUS, 500 - NODE_RADIUS)
                 y = random.randint(NODE_RADIUS, 500 - NODE_RADIUS)
-                person = Person(x, y, speed, i, person_id)
+                person = Person(x, y, speed, i, person_id, fps)
                 person_id += 1
                 for one in added:
                     self.simu_graph.build_family_edge(one, person)
@@ -58,10 +64,13 @@ class Simulation:
     def frame(self):
         self.frame_num += 1
         if self.simu_graph.infected != set():
-            #move
+            # move
             for person in self.simu_graph.infected | self.simu_graph.susceptible | self.simu_graph.recovered:
-                person.make_move()
-            #infect
+                if self.brownian:
+                    person.make_move_brownian()
+                else:
+                    person.make_move_person()
+            # infect
             # has_none = False
             for person in self.infected:
                 # print(self.simu_graph.make_infection(self.close_contact_distance))
