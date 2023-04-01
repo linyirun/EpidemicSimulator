@@ -419,7 +419,7 @@ def main():
     stacked_graph = StackedAreaGraph(temp_population)
     stats_table = StatsTable(num_families)
 
-    simulation = sim(num_families, 1, 5, 100, 1)
+    simulation = sim(num_families, 1, 5, 100, 3)
     simulation.frame()
     main_graph = simulation.simu_graph
 

@@ -24,6 +24,7 @@ class Graph:
         to_remove = set()
         for patient in self.infected:
             patient.close_contact = {}
+            print(patient.infection_frame)
             if current_frame - patient.infection_frame > recover_period:
                 patient.state = RECOVERED
                 to_remove.add(patient)

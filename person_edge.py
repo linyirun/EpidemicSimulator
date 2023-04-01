@@ -101,7 +101,7 @@ class Person:
             next_x = -next_x
         if next_y > 500:
             self.move[1] = -self.move[1]
-            next_x = 500 - (next_y-500)
+            next_y = 500 - (next_y-500)
         if next_y < 0:
             self.move[1] = -self.move[1]
             next_y = -next_y
