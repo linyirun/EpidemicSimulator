@@ -414,12 +414,12 @@ def main():
 
     # for testing purposes
     temp_population = 600
-    num_families = 20
+    num_families = 9
     # TODO: Implement this using the what the user inputs
     stacked_graph = StackedAreaGraph(temp_population)
     stats_table = StatsTable(num_families)
 
-    simulation = sim(num_families, 20, 5, 100, 3)
+    simulation = sim(num_families, 1, 5, 100, 3)
     simulation.frame()
     main_graph = simulation.simu_graph
 
