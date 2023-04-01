@@ -24,7 +24,7 @@ RED = (255, 0, 0)
 SKY_BLUE = (95, 165, 228)
 COLORS = [(0, 255, 0), (0, 0, 255), (255, 255, 0), (0, 255, 255), (255, 0, 255), (192, 192, 192), (128, 128, 128),
           (128, 0, 0), (128, 128, 0), (0, 128, 0), (128, 0, 128), (0, 128, 128), (0, 0, 128), (205, 133, 63),
-          (255, 250, 240), (230, 230, 250), (123, 104, 238), (100, 149, 237), (175, 238, 238)]
+          (255, 250, 240), (230, 230, 250), (123, 104, 238), (100, 149, 237), (175, 238, 238), (95, 165, 228)]
 
 # Parameter Constants
 SCREEN_WIDTH = 1200
@@ -276,10 +276,10 @@ class StatsTable:
         self.draw_center_text('Infected', 20, BLACK, 0, 2)
         self.draw_center_text('Recovered', 20, BLACK, 0, 3)
 
-
-
-
-
+        for i in range(min(len(self.data_table), 4)):
+            for j in range(len(self.data_table[i])):
+                self.draw_center_text(str(self.data_table[self.current_top_row + i][j]), 10, BLACK,
+                                      self.current_top_row + i + 1, j)
 
         # Drawing lines
         for i in range(0, 6):
@@ -369,7 +369,7 @@ def main():
     fam_pop_b = InputButton(215, 580, 60, 25, '25', BLACK, WHITE, True, 'int',
                             (1, 51))
     regen_b = Button(25, 600, 70, 25, 'REGENERATE', WHITE, RED, True)
-    fam_b = InputButton(215, 530, 60, 25, '2', BLACK, WHITE, True, 'int',
+    fam_b = InputButton(215, 530, 60, 25, '20', BLACK, WHITE, True, 'int',
                         (1, 21))
     infect_b = InputButton(445, 580, 60, 25, '0.5', BLACK, WHITE, True,
                            'float', (0.0, 1.0))
