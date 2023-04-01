@@ -58,7 +58,7 @@ class Person:
         self.infection_frame = Optional[int]
         self.frames_per_second = 24
 
-    def make_move(self) -> None:
+    def make_move_brownian(self) -> None:
         """Makes random moves for person in a Brownian motion by updating location"""
         if self.infection_frame == 0:
             self.infection_frame = 1
