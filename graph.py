@@ -24,7 +24,6 @@ class Graph:
         to_remove = set()
         for patient in self.infected:
             patient.close_contact = {}
-            print(patient.infection_frame)
             if current_frame - patient.infection_frame > recover_period:
                 patient.state = RECOVERED
                 to_remove.add(patient)
@@ -43,6 +42,7 @@ class Graph:
         newly_infected = set()
         for patient in self.infected:
             for edge in patient.close_contact.values():
-                if edge.infect(close_contact_distance) is not None:
-                    newly_infected.add(edge.infect(close_contact_distance))
+                value = edge.infect(close_contact_distance)
+                if value is not None:
+                    newly_infected.add(value)
         return newly_infected
