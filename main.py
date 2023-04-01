@@ -319,7 +319,7 @@ class StatsTable:
             self.current_top_row = max(min(self.current_top_row + dy, self.num_families - 4), 0)
 
     def draw_total_table(self, border_radius: int) -> None:
-        """Draws the row that displays the total stats
+        """Draws the row that displays the total stats, and the text that goes along with it
 
         Preconditions:
         - border_radius % 2 == 0
@@ -332,6 +332,9 @@ class StatsTable:
         screen.blit(smaller_background,
                     (self.pos_x + border_radius // 2, self.pos_y + STATS_H + 20 + border_radius // 2))
 
+        draw_text(self.pos_x + border_radius * 2, self.pos_y + STATS_H + 28, f"Uninfected: {100}", 20, BLACK)
+        draw_text(self.pos_x + border_radius * 2 + 215, self.pos_y + STATS_H + 28, f"Infected: {100}", 20, BLACK)
+        draw_text(self.pos_x + border_radius * 2 + 400, self.pos_y + STATS_H + 28, f"Recovered: {100}", 20, BLACK)
 
 def draw_node(position: tuple[int, int], colour: tuple[int, int, int]) -> None:
     """Draws a node at the given position
