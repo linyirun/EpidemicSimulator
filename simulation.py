@@ -57,7 +57,7 @@ class Simulation:
 
     def frame(self):
         self.frame_num += 1
-        if len(self.simu_graph.recovered) < self.num_family * self.family_size:
+        if self.simu_graph.infected != set():
             #move
             for person in self.simu_graph.infected | self.simu_graph.susceptible | self.simu_graph.recovered:
                 person.make_move()
