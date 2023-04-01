@@ -267,6 +267,8 @@ class StatsTable:
         """Updates self by:
         Recalculating values for each family, then redrawing the table with updated values
         """
+        # Draw total table
+        self.draw_total_table(6)
         # Drawing the table background
         stats.fill(SKY_BLUE)
         screen.blit(stats, (self.pos_x, self.pos_y))
@@ -315,6 +317,20 @@ class StatsTable:
         if self.pos_x <= x <= self.pos_x + STATS_W and self.pos_y <= y <= self.pos_y + STATS_H:
             # clamps
             self.current_top_row = max(min(self.current_top_row + dy, self.num_families - 4), 0)
+
+    def draw_total_table(self, border_radius: int) -> None:
+        """Draws the row that displays the total stats
+
+        Preconditions:
+        - border_radius % 2 == 0
+        """
+        bigger_background = py.Surface((STATS_W, 40))
+        bigger_background.fill((220, 220, 220))
+        smaller_background = py.Surface((STATS_W - border_radius, 40 - border_radius))
+        smaller_background.fill(SKY_BLUE)
+        screen.blit(bigger_background, (self.pos_x, self.pos_y + STATS_H + 20))
+        screen.blit(smaller_background,
+                    (self.pos_x + border_radius // 2, self.pos_y + STATS_H + 20 + border_radius // 2))
 
 
 def draw_node(position: tuple[int, int], colour: tuple[int, int, int]) -> None:
