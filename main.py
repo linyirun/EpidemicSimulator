@@ -260,8 +260,8 @@ class StatsTable:
 
         # Initialize the data table with num_families rows with 4 elements each row
         self.data_table = []
-        for _ in range(num_families):
-            self.data_table.append([0, 0, 0, 0])
+        for i in range(num_families):
+            self.data_table.append([i, 0, 0, 0])
 
     def update(self) -> None:
         """Updates self by:
@@ -309,6 +309,12 @@ class StatsTable:
         """
         # end_position = (position[0] + STATS_W, position[1])
         py.draw.line(screen, self.line_color, position, position2, width=self.border_line_width)
+
+    def check_scroll(self, x, y, dy):
+        """checks if we can scroll"""
+        if self.pos_x <= x <= self.pos_x + STATS_W and self.pos_y <= y <= self.pos_y + STATS_H:
+            # clamps
+            self.current_top_row = max(min(self.current_top_row + dy, self.num_families - 1), 0)
 
 
 def draw_node(position: tuple[int, int], colour: tuple[int, int, int]) -> None:
@@ -406,6 +412,10 @@ def main():
             # exit window
             if event.type == py.QUIT:
                 done = True
+            if event.type == py.MOUSEWHEEL:
+                dy = event.y
+                x, y = py.mouse.get_pos()
+                stats_table.check_scroll(x, y, dy)
             if event.type == py.MOUSEBUTTONDOWN:
                 if active_button is not None:
                     active_button.active = False
