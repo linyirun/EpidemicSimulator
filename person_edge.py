@@ -58,54 +58,32 @@ class Person:
         moving_value = moving_distance / 2**0.5
         direction = [-1, 1]
         self.move = [int(random.choice(direction)*moving_value), int(random.choice(direction)*moving_value)]
+        self.speed = 96
+        self.frames_per_second = 24
 
-    def make_move_brownian(self) -> None:
+    def make_move(self) -> None:
         """Makes random moves for person in a Brownian motion by updating location"""
-        if self.infection_frame == 0:
-            self.infection_frame = 1
-        else:
-            self.infection_frame += 1
-
-            # Only move once per frame
-        if self.infection_frame % self.frames_per_second != 0:
-            return
-
-
         x, y = self.location
         dx, dy = random.uniform(-1, 1), random.uniform(-1, 1)
+        magnitude = (dx ** 2 + dy ** 2) ** 0.5  # magnitude of movement vector
+        if magnitude == 0:
+            dx, dy = dx / magnitude, dy / magnitude  # normalize the vector to a unit vector
         distance_moved = self.speed / self.frames_per_second
-        last_dx, last_dy = dx * distance_moved, dy * distance_moved
-        x += last_dx
-        y += last_dy
+        dx, dy = dx * distance_moved, dy * distance_moved  # multiply by distance moved
+        x += dx
+        y += dy
         # Make the person bounce off the borders
-        if x < 0:
-            x = -x
-        elif x > 500:
-            x = 1000 - x
-        if y < 0:
-            y = -y
-        elif y > 500:
-            y = 1000 - y
-        self.last_move = [last_dx, last_dy]
-        self.location = [int(x), int(y)]
+        if x < 10:
+            x = 10 + (10 - x)
+        elif x > 490:
+            x = 980 - x
+        if y < 10:
+            y = 10 + (10 - y)
+        elif y > 490:
+            y = 980 - y
+        self.last_move = [dx, dy]
+        self.location = [x, y]
         # self.last_move_time = time.time()
-
-    def make_move(self):
-        next_x = self.location[0] + self.move[0]
-        next_y = self.location[1] + self.move[1]
-        if next_x > 500:
-            self.move[0] = -self.move[0]
-            next_x = 500 - (next_x-500)
-        if next_x < 0:
-            self.move[0] = -self.move[0]
-            next_x = -next_x
-        if next_y > 500:
-            self.move[1] = -self.move[1]
-            next_y = 500 - (next_y-500)
-        if next_y < 0:
-            self.move[1] = -self.move[1]
-            next_y = -next_y
-        self.location[0], self.location[1] = next_x, next_y
 
     def create_close_contact_edge(self, person: Person):
         """
@@ -126,7 +104,7 @@ class Edge:
 
     def infect(self, close_contact_distance: int) -> Optional[Person]:
         if (self.person1.state is INFECTED and self.person2 is not INFECTED) or (
-                self.person1.state is not INFECTED and self.person2 is INFECTED):
+            self.person1.state is not INFECTED and self.person2 is INFECTED):
             if self.relation is FAMILY:
                 if random.random() < 0.05:
                     return self.get_infected_person()
