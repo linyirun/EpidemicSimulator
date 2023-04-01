@@ -16,7 +16,7 @@ class Simulation:
     recover_period: int # in second
     id_to_family: dict[int, list[Person]]
 
-    def __init__(self, num_family: int, family_size: int, speed: float, recover_period, initial_infected: int):
+    def __init__(self, num_family: int, family_size: int, speed: float, recover_period: int, initial_infected: int):
         """
         Initialize the simulation class
         Preconditions:
@@ -63,6 +63,8 @@ class Simulation:
                 person.make_move()
             #infect
             for person in self.infected:
+                if person is None:
+                    continue
                 person.state = INFECTED
                 person.infection_frame = self.frame_num
                 self.simu_graph.infected.add(person)

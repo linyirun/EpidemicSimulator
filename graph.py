@@ -27,7 +27,6 @@ class Graph:
             if current_frame - patient.infection_frame > recover_period:
                 patient.state = RECOVERED
                 to_remove.add(patient)
-                self.recovered.add(patient)
             else:
                 for person in self.susceptible:
                     if ((person.location[0] - patient.location[0]) ** 2 + (
@@ -36,6 +35,7 @@ class Graph:
 
         for patient in to_remove:
             self.infected.remove(patient)
+            self.recovered.add(patient)
 
     def make_infection(self, close_contact_distance: int) -> set[Person]:
         """return all the newly infected people"""
