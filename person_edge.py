@@ -38,7 +38,7 @@ class Person:
     family_id: int
     state: SUSCEPTIBLE | INFECTED | RECOVERED
     location: list[int, int]
-    move: [int, int]
+    lastmove: [int, int]
     moving_distance: float
     speed: float
     close_contact: dict[int: Edge]
@@ -53,9 +53,9 @@ class Person:
         self.family_id = family_id
         self.location = [x, y]
         self.moving_distance = moving_distance
-        self.move = [0, 0]
         self.close_contact = {}
         self.infection_frame = Optional[int]
+        self.id = id
         self.frames_per_second = 24
 
     def make_move_brownian(self) -> None:
@@ -88,6 +88,8 @@ class Person:
         self.last_move = [last_dx, last_dy]
         self.location = [int(x), int(y)]
         # self.last_move_time = time.time()
+
+    #def make_move(self):
 
     def create_close_contact_edge(self, person: Person):
         """
