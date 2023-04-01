@@ -13,7 +13,7 @@ class Person:
     """
         Instance Attributes:
         - id:
-            An unique identification of a person
+            An unique identification of a person.
         - family_id:
             An int idication the family the person belongs to
         - state:
@@ -32,7 +32,7 @@ class Person:
 
         Representation Invariants:
         - not (self.state is INFECTED) or self.infection_frame is not None
-        -
+        - 0 <= self.location[0] <= 500 and 0 <= self.location[1] <= 500
         """
     id: int
     family_id: int
@@ -46,13 +46,13 @@ class Person:
     infection_frame: Optional[int]  # the number of frame that this
 
     # initial location could be list of list as keeps list of moves [[0,0], [3,10]] initial should be starting point example 0,0
-    def __init__(self, x: int, y: int, speed: float, family_id: int, id: int):
+    def __init__(self, x: int, y: int, moving_distance: float, family_id: int, id: int):
         """Status: 0 for susceptable, 1 for infected and 2 for recovered."""
         self.state = SUSCEPTIBLE
         self.family = {}
         self.family_id = family_id
         self.location = [x, y]
-        self.speed = speed
+        self.moving_distance = moving_distance
         self.move = [0, 0]
         self.close_contact = {}
         self.infection_frame = None
