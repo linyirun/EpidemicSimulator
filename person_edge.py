@@ -10,6 +10,30 @@ FAMILY = 8
 
 
 class Person:
+    """
+        Instance Attributes:
+        - id:
+            An unique identification of a person
+        - family_id:
+            An int idication the family the person belongs to
+        - state:
+            The state of a person that tells if he is infected, susceptable or rocovered.
+        - location:
+            The location interms of pixle of a person on the graph
+        - move:
+            How much interms of x and y a person will move in the next frame
+        - close_contact:
+            A dictionary contaning all the close contact perople with self. Key is the id of it's neighbors
+            assciated
+        - family:
+            A dictionary contaning all the Person with the same family as self.
+        - infection_frameL
+            The frame that self is infected, this is None when self is not infected
+
+        Representation Invariants:
+        - not (self.state is INFECTED) or self.infection_frame is not None
+        -
+        """
     id: int
     family_id: int
     state: SUSCEPTIBLE | INFECTED | RECOVERED
