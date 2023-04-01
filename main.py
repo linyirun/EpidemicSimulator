@@ -279,7 +279,7 @@ class StatsTable:
         for i in range(min(len(self.data_table), 4)):
             for j in range(len(self.data_table[i])):
                 self.draw_center_text(str(self.data_table[self.current_top_row + i][j]), 10, BLACK,
-                                      self.current_top_row + i + 1, j)
+                                      i + 1, j)
 
         # Drawing lines
         for i in range(0, 6):
@@ -314,7 +314,7 @@ class StatsTable:
         """checks if we can scroll"""
         if self.pos_x <= x <= self.pos_x + STATS_W and self.pos_y <= y <= self.pos_y + STATS_H:
             # clamps
-            self.current_top_row = max(min(self.current_top_row + dy, self.num_families - 1), 0)
+            self.current_top_row = max(min(self.current_top_row + dy, self.num_families - 4), 0)
 
 
 def draw_node(position: tuple[int, int], colour: tuple[int, int, int]) -> None:
