@@ -55,18 +55,27 @@ class Person:
         self.moving_distance = moving_distance
         self.move = [0, 0]
         self.close_contact = {}
-        self.infection_frame = None
-        self.id = id
+        self.infection_frame = Optional[int]
+        self.frames_per_second = 24
 
-    def make_move(self, time_elapsed: float) -> None:
+    def make_move(self) -> None:
         """Makes random moves for person in a Brownian motion by updating location"""
+        if self.infection_frame == 0:
+            self.infection_frame = 1
+        else:
+            self.infection_frame += 1
+
+            # Only move once per frame
+        if self.infection_frame % self.frames_per_second != 0:
+            return
+
+
         x, y = self.location
-        dx, dy = random.uniform(-self.moving_distance, self.moving_distance), random.uniform(-self.moving_distance,
-                                                                                             self.moving_distance)
-        elapsed_seconds = time_elapsed / 10  # divide by speed of 10 frames per second
-        distance_moved = elapsed_seconds * self.speed
-        x += dx * distance_moved
-        y += dy * distance_moved
+        dx, dy = random.uniform(-1, 1), random.uniform(-1, 1)
+        distance_moved = self.speed / self.frames_per_second
+        last_dx, last_dy = dx * distance_moved, dy * distance_moved
+        x += last_dx
+        y += last_dy
         # Make the person bounce off the borders
         if x < 0:
             x = -x
@@ -76,6 +85,7 @@ class Person:
             y = -y
         elif y > 500:
             y = 1000 - y
+        self.last_move = [last_dx, last_dy]
         self.location = [int(x), int(y)]
         # self.last_move_time = time.time()
 
@@ -125,3 +135,9 @@ class Edge:
             return self.person2
         else:
             return self.person1
+
+def test_make_move():
+    person = Person(250, 250, 8, 1, 1)
+    while True:
+        print(person.location)
+        person.make_move()
