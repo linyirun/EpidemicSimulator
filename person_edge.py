@@ -38,12 +38,11 @@ class Person:
     family_id: int
     state: SUSCEPTIBLE | INFECTED | RECOVERED
     location: list[int, int]
-    lastmove: [int, int]
+    move: [int, int]
     moving_distance: float
     speed: float
     close_contact: dict[int: Edge]
     family: dict[int: Edge]
-    infection_frame: Optional[int]  # the number of frame that this
 
     # initial location could be list of list as keeps list of moves [[0,0], [3,10]] initial should be starting point example 0,0
     def __init__(self, x: int, y: int, moving_distance: float, family_id: int, id: int):
@@ -56,7 +55,9 @@ class Person:
         self.close_contact = {}
         self.infection_frame = Optional[int]
         self.id = id
-        self.frames_per_second = 24
+        moving_value = moving_distance / 2**0.5
+        direction = [-1, 1]
+        self.move = [int(random.choice(direction)*moving_value), int(random.choice(direction)*moving_value)]
 
     def make_move_brownian(self) -> None:
         """Makes random moves for person in a Brownian motion by updating location"""
@@ -89,7 +90,22 @@ class Person:
         self.location = [int(x), int(y)]
         # self.last_move_time = time.time()
 
-    #def make_move(self):
+    def make_move(self):
+        next_x = self.location[0] + self.move[0]
+        next_y = self.location[1] + self.move[1]
+        if next_x > 500:
+            self.move[0] = -self.move[0]
+            next_x = 500 - (next_x-500)
+        if next_x < 0:
+            self.move[0] = -self.move[0]
+            next_x = -next_x
+        if next_y > 500:
+            self.move[1] = -self.move[1]
+            next_x = 500 - (next_y-500)
+        if next_y < 0:
+            self.move[1] = -self.move[1]
+            next_y = -next_y
+        self.location[0], self.location[1] = next_x, next_y
 
     def create_close_contact_edge(self, person: Person):
         """

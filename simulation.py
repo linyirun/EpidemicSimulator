@@ -59,8 +59,8 @@ class Simulation:
         self.frame_num += 1
         if len(self.simu_graph.recovered) < self.num_family * self.family_size:
             #move
-            # for person in self.simu_graph.infected | self.simu_graph.susceptible | self.simu_graph.recovered:
-            #     person.make_move(10.0)
+            for person in self.simu_graph.infected | self.simu_graph.susceptible | self.simu_graph.recovered:
+                person.make_move()
             #infect
             for person in self.infected:
                 person.state = INFECTED

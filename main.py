@@ -516,6 +516,7 @@ def main():
 
         stacked_graph.update()
         stats_table.update()
+        simulation.frame()
 
         # nodes = []
         # NODES = 50
