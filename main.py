@@ -383,6 +383,10 @@ def update_text_and_graphs() -> None:
     draw_text(140, 530, 'FAMILIES', 15, WHITE)
     draw_text(345, 580, 'INFECTIVITY', 15, WHITE)
     draw_text(310, 530, 'INITIAL INFECTED', 15, WHITE)
+    draw_text(540, 530, 'CONTACT DISTANCE', 15, WHITE)
+    draw_text(640, 580, 'SPEED', 15, WHITE)
+    draw_text(790, 530, 'RECOVERY PERIOD', 15, WHITE)
+    draw_text(850, 580, 'BROWNIAN', 15, WHITE)
 
 
 def main():
@@ -403,16 +407,18 @@ def main():
                                     'int',
                                     (1, int(fam_pop_b.text) * int(fam_b.text)))
     stop_b = Button(25, 565, 70, 25, 'STOP', WHITE, RED, True)
-
+    close_cont_b = InputButton(700, 530, 60, 25, '100', BLACK, WHITE, True, 'int', (1, 1000))
+    speed_b = InputButton(700, 580, 60, 25, '5', BLACK, WHITE, True, 'int', (1, 20))
+    recover_period = InputButton(940, 530, 60, 25, '3', BLACK, WHITE, True, 'float', (1, 20))
+    brownian = Button(940, 580, 25, 25, '', WHITE, RED, False)
 
     # Local variables
     # this button list is needed for the event tracking
     buttons = [
-        run_b, fam_pop_b, fam_b, infect_b, regen_b, inital_infected_b, stop_b
+        run_b, fam_pop_b, fam_b, infect_b, regen_b, inital_infected_b, stop_b, close_cont_b, speed_b, recover_period, brownian
     ]
     # Holds the currently active button
     active_button = None
-
     # for testing purposes
     temp_population = 600
     num_families = 9
