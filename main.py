@@ -466,11 +466,15 @@ def main():
                     active_button.background_color = GREEN if active_button.background_color == RED else RED
                 if active_button is run_b and not is_running:
                     is_running = True
+                if active_button is regen_b:
+                    is_running = False
+                    button_changed = True
             if event.type == py.KEYDOWN and active_button is not None:
                 if event.key == py.K_BACKSPACE:
                     # may need more functionality later
                     if isinstance(active_button, InputButton):
                         active_button.text = active_button.text[:-1]
+                        button_changed = True
                 # takes care of integer input boxes
                 elif isinstance(
                         active_button,
