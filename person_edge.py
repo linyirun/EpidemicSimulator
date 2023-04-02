@@ -126,7 +126,7 @@ class Edge:
             self.person1.state is not INFECTED and self.person2 is INFECTED):
             # Separate check for people in the same family
             if self.person1.family_id == self.person2.family_id:
-                if random.random() < 1:
+                if random.random() < 0.00005:
                     return self.get_infected_person()
                 else:
                     return None
@@ -134,7 +134,7 @@ class Edge:
                 distance = ((self.person1.location[0] - self.person2.location[0]) ** 2 + (
                         self.person1.location[1] - self.person2.location[1]) ** 2) ** 0.5
                 factor = 0.5
-                chance = 1 - ((close_contact_distance - distance) / close_contact_distance) ** 2 * factor
+                chance = 0.1 - ((close_contact_distance - distance) / close_contact_distance) ** 2 * factor
                 if random.random() < chance:
                     return self.get_infected_person()
                 else:

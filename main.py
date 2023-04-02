@@ -248,7 +248,7 @@ class StatsTable:
     """
     data_table: list[list[int, int, int, int]]
     num_families: int
-    graph: Graph
+    simulation: sim
     current_top_row: int
 
     pos_x: int = 600
@@ -256,12 +256,14 @@ class StatsTable:
     line_color: tuple[int, int, int] = (222, 222, 222)
     border_line_width: int = 3
 
-    def __init__(self, num_families: int) -> None:
-        # TODO: add graph into this class
+    _header_font_size: int = 25
+    _text_font_size: int = 20
+
+    def __init__(self, num_families: int, simulation: sim) -> None:
         """Initializes the stats table"""
         self.num_families = num_families
         self.current_top_row = 0
-        # self.graph = g
+        self.simulation = simulation
 
         # Initialize the data table with num_families rows with 4 elements each row
         self.data_table = []
@@ -272,20 +274,27 @@ class StatsTable:
         """Updates self by:
         Recalculating values for each family, then redrawing the table with updated values
         """
+        # Calculate the values for each family
+        for family_id in range(1, self.num_families + 1):
+            uninfected = sum(1 for person in self.simulation.id_to_family[family_id] if person.state == SUSCEPTIBLE)
+            infected = sum(1 for person in self.simulation.id_to_family[family_id] if person.state == INFECTED)
+            recovered = sum(1 for person in self.simulation.id_to_family[family_id] if person.state == RECOVERED)
+            self.data_table[family_id - 1] = [family_id, uninfected, infected, recovered]
+
         # Draw total table
         self.draw_total_table(6)
         # Drawing the table background
         stats.fill(SKY_BLUE)
         screen.blit(stats, (self.pos_x, self.pos_y))
         # Drawing header
-        self.draw_center_text('Family ID', 20, BLACK, 0, 0)
-        self.draw_center_text('Uninfected', 20, BLACK, 0, 1)
-        self.draw_center_text('Infected', 20, BLACK, 0, 2)
-        self.draw_center_text('Recovered', 20, BLACK, 0, 3)
+        self.draw_center_text('Family ID', self._header_font_size, BLACK, 0, 0)
+        self.draw_center_text('Uninfected', self._header_font_size, BLACK, 0, 1)
+        self.draw_center_text('Infected', self._header_font_size, BLACK, 0, 2)
+        self.draw_center_text('Recovered', self._header_font_size, BLACK, 0, 3)
 
         for i in range(min(len(self.data_table), 4)):
             for j in range(len(self.data_table[i])):
-                self.draw_center_text(str(self.data_table[self.current_top_row + i][j]), 10, BLACK,
+                self.draw_center_text(str(self.data_table[self.current_top_row + i][j]), self._text_font_size, BLACK,
                                       i + 1, j)
 
         # Drawing lines
@@ -337,9 +346,14 @@ class StatsTable:
         screen.blit(smaller_background,
                     (self.pos_x + border_radius // 2, self.pos_y + STATS_H + 20 + border_radius // 2))
 
-        draw_text(self.pos_x + border_radius * 2, self.pos_y + STATS_H + 28, f"Uninfected: {100}", 20, BLACK)
-        draw_text(self.pos_x + border_radius * 2 + 215, self.pos_y + STATS_H + 28, f"Infected: {100}", 20, BLACK)
-        draw_text(self.pos_x + border_radius * 2 + 400, self.pos_y + STATS_H + 28, f"Recovered: {100}", 20, BLACK)
+        # Calculate the data for the current frame, then add it
+        uninfected = len(self.simulation.simu_graph.susceptible)
+        infected = len(self.simulation.simu_graph.infected)
+        recovered = len(self.simulation.simu_graph.recovered)
+
+        draw_text(self.pos_x + border_radius * 2, self.pos_y + STATS_H + 28, f"Uninfected: {uninfected}", 20, BLACK)
+        draw_text(self.pos_x + border_radius * 2 + 215, self.pos_y + STATS_H + 28, f"Infected: {infected}", 20, BLACK)
+        draw_text(self.pos_x + border_radius * 2 + 400, self.pos_y + STATS_H + 28, f"Recovered: {recovered}", 20, BLACK)
 
 
 def draw_node(position: tuple[int, int], colour: tuple[int, int, int]) -> None:
@@ -526,7 +540,7 @@ def main():
                                  close_contact_distance, FPS, False)
                 main_graph = simulation.simu_graph
                 stacked_graph = StackedAreaGraph(population, main_graph)
-                stats_table = StatsTable(num_families)
+                stats_table = StatsTable(num_families, simulation)
                 done_frames = 0
             button_changed = False
 
@@ -567,7 +581,6 @@ def main():
                 if person.state != INFECTED:
                     draw_node((person.location[0] + 25, person.location[1] + 25), COLORS[family_id - 1])
 
-        # print(len(simulation.simu_graph.susceptible), len(simulation.simu_graph.infected), len(simulation.simu_graph.recovered))
         stacked_graph.update(is_running)
         # checks if simulation is done
         if active_button is stop_b:
