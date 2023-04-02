@@ -547,7 +547,7 @@ def main():
         if is_running and can_initialize_run:
             can_initialize_run = False
             if not all(button.text != '' for button in buttons if
-                   isinstance(button, InputButton) and button is not brownian):
+                       isinstance(button, InputButton) and button is not brownian):
                 draw_run_error = True
                 can_initialize_run = True
                 is_running = False
@@ -612,3 +612,10 @@ def main():
 
 if __name__ == "__main__":
     main()
+    import python_ta
+
+    python_ta.check_all(config={
+        'extra-imports': [],  # the names (strs) of imported modules
+        'allowed-io': [],  # the names (strs) of functions that call print/open/input
+        'max-line-length': 120
+    })

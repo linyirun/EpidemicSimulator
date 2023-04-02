@@ -1,20 +1,41 @@
 from __future__ import annotations
 import random
 from graph import Graph
-from person_edge import Person, INFECTED, SUSCEPTIBLE, RECOVERED
+from person_edge import Person, INFECTED
 import timeit
 
 NODE_RADIUS = 10
 
 
 class Simulation:
+    """A class represent one backend Simulation
+    Instance Attributes:
+        - simu_graph: the main graph in this simulation
+        - close_contact_distance: the distance that the two person in this edge will be considered close contact
+        interms of pixles
+        - num_family: number of family in this silulation
+        - family_size: number of Person in one family
+        - frame_num: this records the number of frame that have passed in this simulation
+        - infected: this is a set of people that should be infected in the next frame.
+        - recover_period: after recover_period number of frames a person will recover in this simulation
+        - brownian: If True, people in this simulation move in brownian motions otherwise they randomly move and
+        bounce back when hit a wall.
+        - id_to_family: This is a dictionary with id of a family associated with list of all the person in that family
+        - fps: frames per second in this simulation
+
+    Representation Invarients:
+        - all(all(person.family_id == family for person in self.id_to_family[family]) for family in self.id_to_family)
+        - frame_num >= 0
+        - len(infected) <= self.num_family*self.family_size
+
+    """
     simu_graph: Graph
     close_contact_distance: int  # in pixles
     num_family: int
     family_size: int
     frame_num: int
     infected: set
-    recover_period: int  # in second
+    recover_period: int  # in frames
     brownian: bool
     id_to_family: dict[int, list[Person]]
     fps: int
@@ -62,6 +83,9 @@ class Simulation:
             to_infect.state = INFECTED
 
     def frame(self):
+        """This fuction update the graph for the next frame. This update incudes the location of all the Person,
+        the close contact edges, and the states of each Person.
+        """
         self.frame_num += 1
         # move
         for person in self.simu_graph.infected | self.simu_graph.susceptible | self.simu_graph.recovered:
@@ -84,3 +108,10 @@ class Simulation:
 
 if __name__ == '__main__':
     x = timeit.timeit()
+    import python_ta
+
+    python_ta.check_all(config={
+        'extra-imports': [],  # the names (strs) of imported modules
+        'allowed-io': [],  # the names (strs) of functions that call print/open/input
+        'max-line-length': 120
+    })

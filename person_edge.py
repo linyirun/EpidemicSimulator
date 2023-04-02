@@ -10,7 +10,8 @@ FAMILY = 8
 
 
 class Person:
-    """
+    """This class is a representation of a person in the square or a node in the graph.
+
         Instance Attributes:
         - id:
             An unique identification of a person.
@@ -44,8 +45,8 @@ class Person:
     family: dict[int: Edge]
 
     # initial location could be list of list as keeps list of moves [[0,0], [3,10]] initial should be starting point example 0,0
-    def __init__(self, x: int, y: int, speed: int, family_id: int, id: int, fps: int):
-        """Status: 0 for susceptable, 1 for infected and 2 for recovered.
+    def __init__(self, x: int, y: int, speed: int, family_id: int, identification: int, fps: int) -> None:
+        """Inicialize a person. Status: 0 for susceptable, 1 for infected and 2 for recovered.
 
         Preconditions:
         - speed >= 1
@@ -57,10 +58,10 @@ class Person:
         self.speed = speed
         self.close_contact = {}
         self.infection_frame = Optional[int]
-        self.id = id
-        moving_value = speed / 2**0.5
+        self.id = identification
+        moving_value = speed / 2 ** 0.5
         direction = [-1, 1]
-        self.move = [int(random.choice(direction)*moving_value), int(random.choice(direction)*moving_value)]
+        self.move = [int(random.choice(direction) * moving_value), int(random.choice(direction) * moving_value)]
         self.speed = speed * fps
         self.frames_per_second = fps
 
@@ -88,7 +89,9 @@ class Person:
         self.location = [x, y]
         # self.last_move_time = time.time()
 
-    def make_move_person(self):
+    def make_move_person(self) -> None:
+        """More the person to location of the next frame and bounce back when the person hits the wall.
+        """
         next_x = self.location[0] + self.move[0]
         next_y = self.location[1] + self.move[1]
         if next_x > 490:
@@ -105,25 +108,53 @@ class Person:
             next_y = 10 + (10 - next_y)
         self.location[0], self.location[1] = next_x, next_y
 
-    def create_close_contact_edge(self, person: Person):
-        """
-        - person.state == SUSCEPTIBLE
+    def create_close_contact_edge(self, person: Person) -> None:
+        """Creat a close contact edge between two person.
+
+        Precondation:
+        - person.state == SUSCEPTIBLE or self.state == SUSCEPTIBLE
         """
         self.close_contact[person.id] = Edge(self, person)
         person.close_contact[self.id] = Edge(person, self)
 
 
 class Edge:
+    """This class represent an edge between two people either a family edge or a close ocntact edge depend on the
+    family edge of person
+
+    - Representation Invariants:
+        self.person1 is not None and self.person2 is not None
+    """
     person1: Person
     person2: Person
 
     def __init__(self, first: Person, second: Person) -> None:
+        """This inicialize an edge between the given two person.
+
+        Instance Attributes:
+            - person1: a person in the edge
+            - person2: a person in the edge
+
+        - Preconditions:
+            - first is not None and second is not None
+
+        """
         self.person1 = first
         self.person2 = second
 
     def infect(self, close_contact_distance: int) -> Optional[Person]:
+        """ This function have a chance of retuning a person who should be infected in self if one gets infected.
+        This function will not return a person if none of the two person in self are infected. The chances of infection
+        depend on if the two person are in the same family or if they are close contact.
+        If they are in the family there is a concrete chance that one will infect another.
+        If they are close contacts, the change of infection will grow exponancially as the two person are
+        getting closer.
+
+        - Preconditions:
+            - close_contact_distance > 0
+        """
         if (self.person1.state is INFECTED and self.person2 is not INFECTED) or (
-            self.person1.state is not INFECTED and self.person2 is INFECTED):
+                self.person1.state is not INFECTED and self.person2 is INFECTED):
             # Separate check for people in the same family
             if self.person1.family_id == self.person2.family_id:
                 if random.random() < 0.00005:
@@ -142,8 +173,9 @@ class Edge:
         else:
             return None
 
-    def get_infected_person(self):
-        """
+    def get_infected_person(self) -> Person:
+        """ This function returns the person who is infected.
+        Preconditions:
         - (self.person1.state is INFECTED and self.person2 is not INFECTED) or \
             (self.person1.state is not INFECTED and self.person2 is INFECTED)
         """
@@ -152,8 +184,12 @@ class Edge:
         else:
             return self.person1
 
-def test_make_move():
-    person = Person(250, 250, 8, 1, 1)
-    while True:
-        print(person.location)
-        person.make_move()
+
+if __name__ == '__main__':
+    import python_ta
+
+    python_ta.check_all(config={
+        'extra-imports': [],  # the names (strs) of imported modules
+        'allowed-io': [],  # the names (strs) of functions that call print/open/input
+        'max-line-length': 120
+    })
