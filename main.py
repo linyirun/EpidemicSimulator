@@ -138,7 +138,7 @@ class InputButton(Button):
 
             # Handling the input: If the text is just 0, make sure we don't add another integer after
             # Exception: "0." is a valid input
-            if self.text != '0' or to_add == '.':
+            if (self.text != '0' or to_add == '.') and to_add != '':
                 self.text += to_add
                 button_changed = True
 
@@ -175,30 +175,28 @@ class StackedAreaGraph:
     _stacked_graph_x = 600
     _stacked_graph_y = 300
 
-    # TODO: Delete, for testing purposes
-    _i = 0
-
     def __init__(self, total_population: int, g: Graph):
         self._total_population = total_population
         # Initialize data to all uninfected
         self._data = deque([(total_population, 0, 0)] * STACKED_GRAPH_LENGTH)
         self._graph = g
 
-    def update(self):
+    def update(self, is_running: bool) -> None:
         """Updates the graph for the current frame, then draw it
 
         """
-        self._data.popleft()
 
-        new_frame = (0, self._total_population, 0)
+        # Only update if the simulation is currently running
+        if is_running:
+            self._data.popleft()
 
-        # TODO: This is for testing purposes
-        # new_frame = (self._total_population - self._i, self._i, 0)
+            # Calculate the data for the current frame, then add it
+            uninfected = len(self._graph.susceptible)
+            infected = len(self._graph.infected)
+            recovered = len(self._graph.recovered)
 
-        self._data.append(new_frame)
-
-        # TODO: Delete, for testing purposes
-        self._i += 1
+            new_frame = (uninfected, infected, recovered)
+            self._data.append(new_frame)
 
         # Draw the graph onto the screen
         for i in range(len(self._data)):
@@ -440,6 +438,7 @@ def main():
     draw_run_error = False
     error_timer = FPS
     clock = py.time.Clock()
+    done_frames = 0
 
     while not done:
         for event in py.event.get():
@@ -523,11 +522,12 @@ def main():
                 recovery = float(recover_period.text)
                 inital_infected = int(inital_infected_b.text)
                 close_contact_distance = int(close_cont_b.text)
-                simulation = sim(num_families, family_size, speed, int(FPS * recovery), inital_infected,
+                simulation = sim(num_families, family_size, speed + 1, int(FPS * recovery), inital_infected,
                                  close_contact_distance, FPS, False)
                 main_graph = simulation.simu_graph
                 stacked_graph = StackedAreaGraph(population, main_graph)
                 stats_table = StatsTable(num_families)
+                done_frames = 0
             button_changed = False
 
         if is_running and can_initialize_run:
@@ -567,14 +567,20 @@ def main():
                 if person.state != INFECTED:
                     draw_node((person.location[0] + 25, person.location[1] + 25), COLORS[family_id - 1])
 
-        stacked_graph.update()
+        # print(len(simulation.simu_graph.susceptible), len(simulation.simu_graph.infected), len(simulation.simu_graph.recovered))
+        stacked_graph.update(is_running)
         # checks if simulation is done
-        if simulation.simu_graph.infected == set() or active_button is stop_b:
+        if active_button is stop_b:
             is_running = False
             can_initialize_run = True
         if simulation.simu_graph.infected == set():
-            draw_text(25, 5, 'SIMULATION FINISHED', 15, GREEN)
-
+            if done_frames == FPS:
+                draw_text(25, 5, 'SIMULATION FINISHED', 15, GREEN)
+                is_running = False
+                can_initialize_run = True
+                done_frames = FPS
+            else:
+                done_frames += 1
         update_text_and_graphs()
 
         stats_table.update()

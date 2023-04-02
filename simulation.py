@@ -63,27 +63,23 @@ class Simulation:
 
     def frame(self):
         self.frame_num += 1
-        if self.simu_graph.infected != set():
-            # move
-            for person in self.simu_graph.infected | self.simu_graph.susceptible | self.simu_graph.recovered:
-                if self.brownian:
-                    person.make_move_brownian()
-                else:
-                    person.make_move_person()
-            # infect
-            # has_none = False
-            for person in self.infected:
-                # print(self.simu_graph.make_infection(self.close_contact_distance))
-                person.state = INFECTED
-                person.infection_frame = self.frame_num
-                self.simu_graph.susceptible.remove(person)
-                self.simu_graph.infected.add(person)
-            self.simu_graph.update_edge(self.frame_num, self.recover_period, self.close_contact_distance)
+        # move
+        for person in self.simu_graph.infected | self.simu_graph.susceptible | self.simu_graph.recovered:
+            if self.brownian:
+                person.make_move_brownian()
+            else:
+                person.make_move_person()
+        # infect
+        # has_none = False
+        for person in self.infected:
+            # print(self.simu_graph.make_infection(self.close_contact_distance))
+            person.state = INFECTED
+            person.infection_frame = self.frame_num
+            self.simu_graph.susceptible.remove(person)
+            self.simu_graph.infected.add(person)
+        self.simu_graph.update_edge(self.frame_num, self.recover_period, self.close_contact_distance)
 
-            self.infected = self.simu_graph.make_infection(self.close_contact_distance)
-
-        else:
-            print('Done')
+        self.infected = self.simu_graph.make_infection(self.close_contact_distance)
 
 
 if __name__ == '__main__':
