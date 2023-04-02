@@ -466,6 +466,8 @@ def main():
                     active_button.background_color = GREEN if active_button.background_color == RED else RED
                 if active_button is run_b and not is_running:
                     is_running = True
+                    if simulation.simu_graph.infected == set():
+                        button_changed = True
                 if active_button is regen_b:
                     is_running = False
                     button_changed = True
@@ -570,6 +572,8 @@ def main():
         if simulation.simu_graph.infected == set() or active_button is stop_b:
             is_running = False
             can_initialize_run = True
+        if simulation.simu_graph.infected == set():
+            draw_text(25, 5, 'SIMULATION FINISHED', 15, GREEN)
 
         update_text_and_graphs()
 
