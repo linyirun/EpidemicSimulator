@@ -75,11 +75,15 @@ class Graph:
         """
         newly_infected = set()
         for patient in self.infected:
+            for family_edge in patient.family.values():
+                potencial_infect = family_edge.infect(close_contact_distance)
+                if potencial_infect is not None:
+                    newly_infected.add(potencial_infect)
             for edge in patient.close_contact.values():
                 value = edge.infect(close_contact_distance)
-                if value is not None:
+                if value is not None and value.family_id != patient.family_id:
                     newly_infected.add(value)
-        print(newly_infected)
+        #print(newly_infected)
         return newly_infected
 
 
