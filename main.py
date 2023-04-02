@@ -22,6 +22,7 @@ WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 # Node Colours (20 of them, 1 per family)
 SKY_BLUE = (95, 165, 228)
+GREEN = (0, 255, 0)
 COLORS = [(0, 255, 0), (0, 0, 255), (255, 255, 0), (0, 255, 255), (255, 0, 255), (192, 192, 192), (128, 128, 128),
           (128, 0, 0), (128, 128, 0), (0, 128, 0), (128, 0, 128), (0, 128, 128), (0, 0, 128), (205, 133, 63),
           (255, 250, 240), (230, 230, 250), (123, 104, 238), (100, 149, 237), (175, 238, 238), (95, 165, 228)]
@@ -171,12 +172,11 @@ class StackedAreaGraph:
     # TODO: Delete, for testing purposes
     _i = 0
 
-    def __init__(self, total_population: int):
-        # TODO: Implement this with graph: initialize the number of initial infected using the graph
+    def __init__(self, total_population: int, g: Graph):
         self._total_population = total_population
         # Initialize data to all uninfected
         self._data = deque([(total_population, 0, 0)] * STACKED_GRAPH_LENGTH)
-        # self._graph = g
+        self._graph = g
 
     def update(self):
         """Updates the graph for the current frame, then draw it
@@ -337,6 +337,7 @@ class StatsTable:
         draw_text(self.pos_x + border_radius * 2 + 215, self.pos_y + STATS_H + 28, f"Infected: {100}", 20, BLACK)
         draw_text(self.pos_x + border_radius * 2 + 400, self.pos_y + STATS_H + 28, f"Recovered: {100}", 20, BLACK)
 
+
 def draw_node(position: tuple[int, int], colour: tuple[int, int, int]) -> None:
     """Draws a node at the given position
 
@@ -415,22 +416,20 @@ def main():
     # Local variables
     # this button list is needed for the event tracking
     buttons = [
-        run_b, fam_pop_b, fam_b, infect_b, regen_b, inital_infected_b, stop_b, close_cont_b, speed_b, recover_period, brownian
+        run_b, fam_pop_b, fam_b, infect_b, regen_b, inital_infected_b, stop_b, close_cont_b, speed_b, recover_period,
+        brownian
     ]
     # Holds the currently active button
     active_button = None
     # for testing purposes
-    temp_population = 600
-    num_families = 9
-    # TODO: Implement this using the what the user inputs
-    stacked_graph = StackedAreaGraph(temp_population)
-    stats_table = StatsTable(num_families)
-
-    simulation = sim(num_families, 1, 5, 100, 3, 100, FPS, False)
-    simulation.frame()
-    main_graph = simulation.simu_graph
+    simulation = None
+    main_graph = None
+    stacked_graph = None
+    stats_table = None
 
     done = False
+    is_running = False
+    can_initialize_run = True
     clock = py.time.Clock()
 
     while not done:
@@ -441,7 +440,8 @@ def main():
             if event.type == py.MOUSEWHEEL:
                 dy = event.y
                 x, y = py.mouse.get_pos()
-                stats_table.check_scroll(x, y, dy)
+                if stats_table is not None:
+                    stats_table.check_scroll(x, y, dy)
             if event.type == py.MOUSEBUTTONDOWN:
                 if active_button is not None:
                     active_button.active = False
@@ -451,6 +451,11 @@ def main():
                         b.active = True
                         active_button = b
                         break
+                # lol if statements for buttons lol
+                if active_button is brownian:
+                    active_button.background_color = GREEN if active_button.background_color == RED else RED
+                if active_button is run_b and not is_running:
+                    is_running = True
             if event.type == py.KEYDOWN and active_button is not None:
                 if event.key == py.K_BACKSPACE:
                     # may need more functionality later
@@ -482,8 +487,8 @@ def main():
         for b in buttons:
             # updates bounds for initial infected
             if b is inital_infected_b:
-                b.bounds = (1, int(fam_pop_b.text) * int(fam_b.text) if
-                fam_pop_b.text != '' and fam_b.text != '' else 1)
+                b.bounds = (
+                1, int(fam_pop_b.text) * int(fam_b.text) if fam_pop_b.text != '' and fam_b.text != '' else 1)
                 if b.text != '':
                     b.text = str(
                         min(
@@ -491,51 +496,59 @@ def main():
                             int(fam_pop_b.text) * int(fam_b.text) if
                             fam_pop_b.text != '' and fam_b.text != '' else 1))
             b.update()
+        if is_running and can_initialize_run:
+            can_initialize_run = False
+            try:
+                population = int(fam_b.text) * int(fam_pop_b.text)
+            except ValueError:
+                draw_text(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, "INPUTS MUST BE VALID", 50, RED)
+                can_initialize_run = True
+                is_running = False
+            else:
+                num_families = int(fam_b.text)
+                simulation = sim(num_families, 1, 5, 100, 3, 100, FPS, False)
+                main_graph = simulation.simu_graph
+                stacked_graph = StackedAreaGraph(population, main_graph)
+                stats_table = StatsTable(num_families)
 
-        # update main graph edges
-        for j in main_graph.infected:
-            for m in j.close_contact:
-                x = main_graph.id_to_person[m].location[0]
-                y = main_graph.id_to_person[m].location[1]
-                draw_edge((j.location[0] + 25, j.location[1] + 25), (x + 25, y + 25), WHITE)
-        for k in main_graph.id_to_person.values():
-            for n in main_graph.id_to_person.values():
-                if k.family_id == n.family_id:
-                    x = n.location[0]
-                    y = n.location[1]
-                    draw_edge((k.location[0] + 25, k.location[1] + 25), (x + 25, y + 25), WHITE)
-        # Update the main graph nodes
-        for j in main_graph.infected:
-            x = j.location[0]
-            y = j.location[1]
-            draw_node((x + 25, y + 25), (255, 0, 0))
-        for k in main_graph.recovered:
-            x = k.location[0]
-            y = k.location[1]
-            draw_node((x + 25, y + 25), (0, 0, 255))
+        if is_running:
+            # update main graph edges
+            simulation.frame()
+            for j in main_graph.infected:
+                for m in j.close_contact:
+                    x = main_graph.id_to_person[m].location[0]
+                    y = main_graph.id_to_person[m].location[1]
+                    draw_edge((j.location[0] + 25, j.location[1] + 25), (x + 25, y + 25), WHITE)
+            for k in main_graph.id_to_person.values():
+                for n in main_graph.id_to_person.values():
+                    if k.family_id == n.family_id:
+                        x = n.location[0]
+                        y = n.location[1]
+                        draw_edge((k.location[0] + 25, k.location[1] + 25), (x + 25, y + 25), WHITE)
+            # Update the main graph nodes
+            for j in main_graph.infected:
+                x = j.location[0]
+                y = j.location[1]
+                draw_node((x + 25, y + 25), (255, 0, 0))
+            for k in main_graph.recovered:
+                x = k.location[0]
+                y = k.location[1]
+                draw_node((x + 25, y + 25), (0, 0, 255))
 
-        for family_id in range(1, simulation.num_family + 1):
-            for person in simulation.id_to_family[family_id]:
-                if person.state != INFECTED:
-                    draw_node((person.location[0] + 25, person.location[1] + 25), COLORS[family_id - 1])
+            for family_id in range(1, simulation.num_family + 1):
+                for person in simulation.id_to_family[family_id]:
+                    if person.state != INFECTED:
+                        draw_node((person.location[0] + 25, person.location[1] + 25), COLORS[family_id - 1])
+
+            stacked_graph.update()
+            stats_table.update()
+            # checks if simulation is done
+            if simulation.simu_graph.infected == set() or active_button is stop_b:
+                is_running = False
+                can_initialize_run = True
+
 
         update_text_and_graphs()
-
-        stacked_graph.update()
-        stats_table.update()
-        simulation.frame()
-
-        # nodes = []
-        # NODES = 50
-        # for i in range(NODES):
-        #     node1 = (random.randint(25, 525), random.randint(25, 525))
-        #     nodes.append(node1)
-        #     draw_node(node1)
-        #
-        # for i in range(NODES - 1):
-        #     for j in range(i + 1, NODES):
-        #         draw_edge(nodes[i], nodes[j])
-
         py.display.flip()
         clock.tick(FPS)
 
