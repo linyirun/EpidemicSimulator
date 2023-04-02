@@ -401,22 +401,26 @@ def update_text_and_graphs(simulation: sim) -> None:
     py.draw.rect(screen, SKY_BLUE, second_block, 1)
     # Drawing the text along with its bounds
     draw_text(120, 580, 'FAMILY SIZE', 15, WHITE)
-    draw_text(120, 600, '(max 20)', 15, WHITE)
+    draw_text(150, 600, '(max 50)', 15, WHITE)
 
     draw_text(140, 530, 'FAMILIES', 15, WHITE)
-    draw_text(140, 550, '(max 50)', 15, WHITE)
+    draw_text(150, 550, '(max 20)', 15, WHITE)
 
     draw_text(345, 580, 'INFECTIVITY', 15, WHITE)
     draw_text(345, 600, '(max 1.0)', 15, WHITE)
 
     draw_text(310, 530, 'INITIAL INFECTED', 15, WHITE)
-    draw_text(310, 550, f'(max {simulation.num_family * simulation.family_size})', 15, WHITE)
+    draw_text(350, 550, f'(max {simulation.num_family * simulation.family_size})', 15, WHITE)
 
     draw_text(540, 530, 'CONTACT DISTANCE', 15, WHITE)
-    # draw_text(540, 550, '(max 100)', 15, WHITE)
+    draw_text(625, 550, '(max 999)', 15, WHITE)
 
     draw_text(640, 580, 'SPEED', 15, WHITE)
+    draw_text(635, 600, '(max 20)', 15, WHITE)
+
     draw_text(790, 530, 'RECOVERY PERIOD', 15, WHITE)
+    draw_text(860, 550, '(max 9999)', 15, WHITE)
+
     draw_text(850, 580, 'BROWNIAN', 15, WHITE)
 
 
@@ -440,8 +444,8 @@ def main():
                                     (1, int(fam_pop_b.text) * int(fam_b.text) + 1))
     stop_b = Button(25, 565, 70, 25, 'STOP', WHITE, RED, True)
     close_cont_b = InputButton(700, 530, 60, 25, '100', BLACK, WHITE, True, 'int', (1, 1000))
-    speed_b = InputButton(700, 580, 60, 25, '5', BLACK, WHITE, True, 'int', (1, 20))
-    recover_period = InputButton(940, 530, 60, 25, '3', BLACK, WHITE, True, 'float', (1, 20))
+    speed_b = InputButton(700, 580, 60, 25, '5', BLACK, WHITE, True, 'int', (1, 21))
+    recover_period = InputButton(940, 530, 60, 25, '3', BLACK, WHITE, True, 'float', (1, 10000))
     brownian = Button(940, 580, 25, 25, '', WHITE, RED, False)
 
     # Local variables
