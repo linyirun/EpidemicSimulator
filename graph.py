@@ -16,7 +16,7 @@ class Graph:
         self.edges = set()
 
     def build_family_edge(self, person1: Person, person2: Person) -> None:
-        edge = Edge(person1, person2, FAMILY)
+        edge = Edge(person1, person2)
         person1.family[person2.id] = edge
         person2.family[person1.id] = edge
 

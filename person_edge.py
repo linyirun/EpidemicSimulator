@@ -107,33 +107,32 @@ class Person:
 
     def create_close_contact_edge(self, person: Person):
         """
-        person.state is SUSCEPTIBLE
+        - person.state == SUSCEPTIBLE
         """
-        self.close_contact[person.id] = Edge(self, person, CONTACT)
+        self.close_contact[person.id] = Edge(self, person)
 
 
 class Edge:
     person1: Person
     person2: Person
-    relation: FAMILY | CONTACT
 
-    def __init__(self, first: Person, second: Person, relation: FAMILY | CONTACT) -> None:
+    def __init__(self, first: Person, second: Person) -> None:
         self.person1 = first
         self.person2 = second
-        self.relation = relation
 
     def infect(self, close_contact_distance: int) -> Optional[Person]:
         if (self.person1.state is INFECTED and self.person2 is not INFECTED) or (
             self.person1.state is not INFECTED and self.person2 is INFECTED):
-            if self.relation is FAMILY:
-                if random.random() < 0.05:
+            # Separate check for people in the same family
+            if self.person1.family_id == self.person2.family_id:
+                if random.random() < 1:
                     return self.get_infected_person()
                 else:
                     return None
             else:
                 distance = ((self.person1.location[0] - self.person2.location[0]) ** 2 + (
                         self.person1.location[1] - self.person2.location[1]) ** 2) ** 0.5
-                factor = 0.001
+                factor = 0.5
                 chance = 1 - ((close_contact_distance - distance) / close_contact_distance) ** 2 * factor
                 if random.random() < chance:
                     return self.get_infected_person()
