@@ -43,6 +43,9 @@ screen = py.display.set_mode(size)
 py.display.set_caption(TITLE)
 stats = py.Surface((STATS_W, STATS_H))
 
+# global non constant variables
+button_changed = True
+
 
 class Button:
     """
@@ -128,6 +131,7 @@ class InputButton(Button):
         Preconditons:
             - len(event_unicode) == 1
         """
+        global button_changed
         if self.input_type == 'float':
             # Checks if the resulting number is in the bound - otherwise make it empty
             to_add = event_unicode if self.bounds[0] <= float(self.text + event_unicode) <= \
@@ -137,13 +141,16 @@ class InputButton(Button):
             # Exception: "0." is a valid input
             if self.text != '0' or to_add == '.':
                 self.text += to_add
+                button_changed = True
 
         elif self.input_type == 'int':
             possible_text = self.text + event_unicode
-            to_add = event_unicode if self.bounds[0] <= int(
-                possible_text) < self.bounds[1] else ''
-            self.text = str(int(self.text +
-                                to_add)) if self.text + to_add != '' else ''
+            if self.bounds[0] <= int(possible_text) < self.bounds[1]:
+                to_add = event_unicode
+                button_changed = True
+            else:
+                to_add = ''
+            self.text = str(int(self.text + to_add)) if self.text + to_add != '' else ''
 
 
 class StackedAreaGraph:
@@ -392,15 +399,16 @@ def update_text_and_graphs() -> None:
 
 def main():
     """The function that runs the project"""
+    global button_changed
     # Initializes pygame stuff
     py.init()
     py.font.init()
     # Initializes buttons
     run_b = Button(25, 530, 70, 25, 'RUN', WHITE, RED, True)
-    fam_pop_b = InputButton(215, 580, 60, 25, '25', BLACK, WHITE, True, 'int',
+    fam_pop_b = InputButton(215, 580, 60, 25, '5', BLACK, WHITE, True, 'int',
                             (1, 51))
     regen_b = Button(25, 600, 70, 25, 'REGENERATE', WHITE, RED, True)
-    fam_b = InputButton(215, 530, 60, 25, '20', BLACK, WHITE, True, 'int',
+    fam_b = InputButton(215, 530, 60, 25, '5', BLACK, WHITE, True, 'int',
                         (1, 21))
     infect_b = InputButton(445, 580, 60, 25, '0.5', BLACK, WHITE, True,
                            'float', (0.0, 1.0))
@@ -430,6 +438,8 @@ def main():
     done = False
     is_running = False
     can_initialize_run = True
+    draw_run_error = False
+    error_timer = FPS
     clock = py.time.Clock()
 
     while not done:
@@ -488,7 +498,7 @@ def main():
             # updates bounds for initial infected
             if b is inital_infected_b:
                 b.bounds = (
-                1, int(fam_pop_b.text) * int(fam_b.text) if fam_pop_b.text != '' and fam_b.text != '' else 1)
+                    1, int(fam_pop_b.text) * int(fam_b.text) if fam_pop_b.text != '' and fam_b.text != '' else 1)
                 if b.text != '':
                     b.text = str(
                         min(
@@ -496,59 +506,77 @@ def main():
                             int(fam_pop_b.text) * int(fam_b.text) if
                             fam_pop_b.text != '' and fam_b.text != '' else 1))
             b.update()
-        if is_running and can_initialize_run:
-            can_initialize_run = False
-            try:
-                population = int(fam_b.text) * int(fam_pop_b.text)
-            except ValueError:
-                draw_text(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, "INPUTS MUST BE VALID", 50, RED)
-                can_initialize_run = True
-                is_running = False
-            else:
+        # always initlialized a new simulatinon if is not running
+        if button_changed:
+            if all(button.text != '' for button in buttons if
+                   isinstance(button, InputButton) and button is not brownian):
                 num_families = int(fam_b.text)
-                simulation = sim(num_families, 1, 5, 100, 3, 100, FPS, False)
+                family_size = int(fam_pop_b.text)
+                population = num_families * family_size
+                speed = int(speed_b.text)
+                recovery = float(recover_period.text)
+                inital_infected = int(inital_infected_b.text)
+                close_contact_distance = int(close_cont_b.text)
+                simulation = sim(num_families, family_size, speed, int(FPS * recovery), inital_infected,
+                                 close_contact_distance, FPS, False)
                 main_graph = simulation.simu_graph
                 stacked_graph = StackedAreaGraph(population, main_graph)
                 stats_table = StatsTable(num_families)
+            button_changed = False
+
+        if is_running and can_initialize_run:
+            can_initialize_run = False
+            if not all(button.text != '' for button in buttons if
+                   isinstance(button, InputButton) and button is not brownian):
+                draw_run_error = True
+                can_initialize_run = True
+                is_running = False
 
         if is_running:
-            # update main graph edges
             simulation.frame()
-            for j in main_graph.infected:
-                for m in j.close_contact:
-                    x = main_graph.id_to_person[m].location[0]
-                    y = main_graph.id_to_person[m].location[1]
-                    draw_edge((j.location[0] + 25, j.location[1] + 25), (x + 25, y + 25), WHITE)
-            for k in main_graph.id_to_person.values():
-                for n in main_graph.id_to_person.values():
-                    if k.family_id == n.family_id:
-                        x = n.location[0]
-                        y = n.location[1]
-                        draw_edge((k.location[0] + 25, k.location[1] + 25), (x + 25, y + 25), WHITE)
-            # Update the main graph nodes
-            for j in main_graph.infected:
-                x = j.location[0]
-                y = j.location[1]
-                draw_node((x + 25, y + 25), (255, 0, 0))
-            for k in main_graph.recovered:
-                x = k.location[0]
-                y = k.location[1]
-                draw_node((x + 25, y + 25), (0, 0, 255))
+        # update main graph edges
+        for j in main_graph.infected:
+            for m in j.close_contact:
+                x = main_graph.id_to_person[m].location[0]
+                y = main_graph.id_to_person[m].location[1]
+                draw_edge((j.location[0] + 25, j.location[1] + 25), (x + 25, y + 25), WHITE)
+        for k in main_graph.id_to_person.values():
+            for n in main_graph.id_to_person.values():
+                if k.family_id == n.family_id:
+                    x = n.location[0]
+                    y = n.location[1]
+                    draw_edge((k.location[0] + 25, k.location[1] + 25), (x + 25, y + 25), WHITE)
+        # Update the main graph nodes
+        for j in main_graph.infected:
+            x = j.location[0]
+            y = j.location[1]
+            draw_node((x + 25, y + 25), (255, 0, 0))
+        for k in main_graph.recovered:
+            x = k.location[0]
+            y = k.location[1]
+            draw_node((x + 25, y + 25), (0, 0, 255))
 
-            for family_id in range(1, simulation.num_family + 1):
-                for person in simulation.id_to_family[family_id]:
-                    if person.state != INFECTED:
-                        draw_node((person.location[0] + 25, person.location[1] + 25), COLORS[family_id - 1])
+        for family_id in range(1, simulation.num_family + 1):
+            for person in simulation.id_to_family[family_id]:
+                if person.state != INFECTED:
+                    draw_node((person.location[0] + 25, person.location[1] + 25), COLORS[family_id - 1])
 
-            stacked_graph.update()
-            stats_table.update()
-            # checks if simulation is done
-            if simulation.simu_graph.infected == set() or active_button is stop_b:
-                is_running = False
-                can_initialize_run = True
-
+        stacked_graph.update()
+        # checks if simulation is done
+        if simulation.simu_graph.infected == set() or active_button is stop_b:
+            is_running = False
+            can_initialize_run = True
 
         update_text_and_graphs()
+
+        stats_table.update()
+        if draw_run_error:
+            if error_timer == 0:
+                error_timer = FPS
+                draw_run_error = False
+            error_timer -= 1
+            draw_text(SCREEN_WIDTH // 4, SCREEN_HEIGHT // 4, 'ALL INPUTS MUST BE VALID', 50, RED)
+
         py.display.flip()
         clock.tick(FPS)
 
