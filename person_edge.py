@@ -156,8 +156,9 @@ class Edge:
         if (self.person1.state is INFECTED and self.person2 is not INFECTED) or (
                 self.person1.state is not INFECTED and self.person2 is INFECTED):
             # Separate check for people in the same family
+            print(self.person1.family_id, ' ', self.person2.family_id)
             if self.person1.family_id == self.person2.family_id:
-                if random.random() < 0.00005:
+                if random.random() <= 1:
                     return self.get_infected_person()
                 else:
                     return None

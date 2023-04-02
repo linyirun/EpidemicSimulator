@@ -12,6 +12,7 @@ from simulation import Simulation as sim
 from person_edge import INFECTED, SUSCEPTIBLE, RECOVERED
 from graph import Graph
 import math
+from python_ta.contracts import check_contracts
 
 # Colours
 BLACK = (0, 0, 0)
@@ -45,7 +46,7 @@ stats = py.Surface((STATS_W, STATS_H))
 # global non constant variables
 button_changed = True
 
-
+@check_contracts
 class Button:
     """
     Creates a new pygame button
@@ -391,18 +392,29 @@ def draw_text(x: int, y: int, text: str, font_size: int,
     screen.blit(text_render, (x, y))
 
 
-def update_text_and_graphs() -> None:
+def update_text_and_graphs(simulation: sim) -> None:
     """Updates all GUI elements except buttons (TO BE FINISHED)"""
     main_block = py.Rect(25, 25, 500, 500)
     py.draw.rect(screen, SKY_BLUE, main_block, 1)
     second_block = py.Rect(600, 300, STACKED_GRAPH_LENGTH,
                            STACKED_GRAPH_HEIGHT)
     py.draw.rect(screen, SKY_BLUE, second_block, 1)
+    # Drawing the text along with its bounds
     draw_text(120, 580, 'FAMILY SIZE', 15, WHITE)
+    draw_text(120, 600, '(max 20)', 15, WHITE)
+
     draw_text(140, 530, 'FAMILIES', 15, WHITE)
+    draw_text(140, 550, '(max 50)', 15, WHITE)
+
     draw_text(345, 580, 'INFECTIVITY', 15, WHITE)
+    draw_text(345, 600, '(max 1.0)', 15, WHITE)
+
     draw_text(310, 530, 'INITIAL INFECTED', 15, WHITE)
+    draw_text(310, 550, f'(max {simulation.num_family * simulation.family_size})', 15, WHITE)
+
     draw_text(540, 530, 'CONTACT DISTANCE', 15, WHITE)
+    # draw_text(540, 550, '(max 100)', 15, WHITE)
+
     draw_text(640, 580, 'SPEED', 15, WHITE)
     draw_text(790, 530, 'RECOVERY PERIOD', 15, WHITE)
     draw_text(850, 580, 'BROWNIAN', 15, WHITE)
@@ -425,7 +437,7 @@ def main():
                            'float', (0.0, 1.0))
     inital_infected_b = InputButton(445, 530, 60, 25, '1', BLACK, WHITE, True,
                                     'int',
-                                    (1, int(fam_pop_b.text) * int(fam_b.text)))
+                                    (1, int(fam_pop_b.text) * int(fam_b.text) + 1))
     stop_b = Button(25, 565, 70, 25, 'STOP', WHITE, RED, True)
     close_cont_b = InputButton(700, 530, 60, 25, '100', BLACK, WHITE, True, 'int', (1, 1000))
     speed_b = InputButton(700, 580, 60, 25, '5', BLACK, WHITE, True, 'int', (1, 20))
@@ -517,7 +529,7 @@ def main():
             # updates bounds for initial infected
             if b is inital_infected_b:
                 b.bounds = (
-                    1, int(fam_pop_b.text) * int(fam_b.text) if fam_pop_b.text != '' and fam_b.text != '' else 1)
+                    1, int(fam_pop_b.text) * int(fam_b.text) + 1 if fam_pop_b.text != '' and fam_b.text != '' else 1)
                 if b.text != '':
                     b.text = str(
                         min(
@@ -594,7 +606,7 @@ def main():
                 done_frames = FPS
             else:
                 done_frames += 1
-        update_text_and_graphs()
+        update_text_and_graphs(simulation)
 
         stats_table.update()
         if draw_run_error:
@@ -612,10 +624,10 @@ def main():
 
 if __name__ == "__main__":
     main()
-    import python_ta
-
-    python_ta.check_all(config={
-        'extra-imports': [],  # the names (strs) of imported modules
-        'allowed-io': [],  # the names (strs) of functions that call print/open/input
-        'max-line-length': 120
-    })
+    # import python_ta
+    #
+    # python_ta.check_all(config={
+    #     'extra-imports': [],  # the names (strs) of imported modules
+    #     'allowed-io': [],  # the names (strs) of functions that call print/open/input
+    #     'max-line-length': 120
+    # })
