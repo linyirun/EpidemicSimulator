@@ -27,6 +27,10 @@ class Graph:
             if current_frame - patient.infection_frame > recover_period:
                 patient.state = RECOVERED
                 to_remove.add(patient)
+            # for person_id in patient.family:
+            #     if person_id != patient.id:
+            #         patient.create_close_contact_edge(self.id_to_person[person_id])
+            #
             else:
                 for person in self.susceptible:
                     if ((person.location[0] - patient.location[0]) ** 2 + (
@@ -45,4 +49,5 @@ class Graph:
                 value = edge.infect(close_contact_distance)
                 if value is not None:
                     newly_infected.add(value)
+        print(newly_infected)
         return newly_infected

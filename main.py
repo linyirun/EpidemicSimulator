@@ -175,7 +175,7 @@ class StackedAreaGraph:
     _stacked_graph_x = 600
     _stacked_graph_y = 300
 
-    def __init__(self, total_population: int, g: Graph):
+    def __init__(self, total_population: int, g: Graph) -> None:
         self._total_population = total_population
         # Initialize data to all uninfected
         self._data = deque([(total_population, 0, 0)] * STACKED_GRAPH_LENGTH)

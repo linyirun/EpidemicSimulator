@@ -110,6 +110,7 @@ class Person:
         - person.state == SUSCEPTIBLE
         """
         self.close_contact[person.id] = Edge(self, person)
+        person.close_contact[self.id] = Edge(person, self)
 
 
 class Edge:
