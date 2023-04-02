@@ -11,7 +11,6 @@ import pygame as py
 from simulation import Simulation as sim
 from person_edge import INFECTED, SUSCEPTIBLE, RECOVERED
 from graph import Graph
-import random
 import math
 
 # Colours
@@ -457,13 +456,14 @@ def main():
                     active_button.active = False
                     active_button = None
                 for b in buttons:
-                    if b.rect.collidepoint(event.pos):
+                    if b.rect.collidepoint(event.pos) and (not is_running or not isinstance(b, InputButton)):
                         b.active = True
                         active_button = b
                         break
                 # lol if statements for buttons lol
                 if active_button is brownian:
                     active_button.background_color = GREEN if active_button.background_color == RED else RED
+                    simulation.brownian = True if active_button.background_color == GREEN else False
                 if active_button is run_b and not is_running:
                     is_running = True
                     if simulation.simu_graph.infected == set():
