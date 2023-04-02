@@ -5,14 +5,13 @@ GROUP MEMBERS: Richard Chen, Bill Lin, Runtong Liang, Yiyue Deng
 This is the main runner file for our CSC111 project
 """
 from __future__ import annotations
-from typing import Optional
 from collections import deque
+import math
 import pygame as py
+from python_ta.contracts import check_contracts
 from simulation import Simulation as sim
 from person_edge import INFECTED, SUSCEPTIBLE, RECOVERED
 from graph import Graph
-import math
-from python_ta.contracts import check_contracts
 
 # Colours
 BLACK = (0, 0, 0)
@@ -46,6 +45,7 @@ stats = py.Surface((STATS_W, STATS_H))
 # global non constant variables
 button_changed = True
 
+
 @check_contracts
 class Button:
     """
@@ -64,7 +64,8 @@ class Button:
     - rect: a pygame rect object of this button
 
     Representation Invariants:
-    - SCREEN_WIDTH >= self.x >= 0 and SCREEN_HEIGHT >= self.y >= 0 and self.w <= SCREEN_WIDTH - self.x and self.h <= SCREEN_HEIGHT - self.y
+    - SCREEN_WIDTH >= self.x >= 0 and SCREEN_HEIGHT >= self.y >= 0
+    - self.w <= SCREEN_WIDTH - self.x and self.h <= SCREEN_HEIGHT - self.y
     - not self.input_box or (self.text == '' or self.text.isdigit())
     """
     x: int
@@ -117,10 +118,8 @@ class InputButton(Button):
     bounds: tuple[float | int, float | int]
 
     def __init__(self, x: int, y: int, w: int, h: int, text: str,
-                 text_color: tuple[int, int,
-                 int], background_c: tuple[int, int, int],
-                 hover: bool, input_type: str, bounds: tuple[float | int,
-                                                             float | int]):
+                 text_color: tuple[int, int, int], background_c: tuple[int, int, int],
+                 hover: bool, input_type: str, bounds: tuple[float | int, float | int]) -> None:
         """Initialize with the given information"""
         super().__init__(x, y, w, h, text, text_color, background_c, hover)
         self.input_type = input_type
@@ -134,8 +133,8 @@ class InputButton(Button):
         global button_changed
         if self.input_type == 'float':
             # Checks if the resulting number is in the bound - otherwise make it empty
-            to_add = event_unicode if self.bounds[0] <= float(self.text + event_unicode) <= \
-                                      self.bounds[1] and len(self.text) < 5 else ''
+            to_add = event_unicode if self.bounds[0] <= float(self.text + event_unicode) <= self.bounds[1] and len(
+                self.text) < 5 else ''
 
             # Handling the input: If the text is just 0, make sure we don't add another integer after
             # Exception: "0." is a valid input
@@ -151,6 +150,10 @@ class InputButton(Button):
             else:
                 to_add = ''
             self.text = str(int(self.text + to_add)) if self.text + to_add != '' else ''
+
+    def change_bound(self, new_bounds: tuple[int, int]) -> None:
+        """Function to change the current bounds"""
+        self.bounds = new_bounds
 
 
 class StackedAreaGraph:
@@ -170,11 +173,11 @@ class StackedAreaGraph:
     _data: deque[tuple[int, int, int]]
     _graph: Graph
 
-    _infected_colour = (255, 0, 0)
-    _cured_colour = (0, 0, 255)
-    _uninfected_colour = (220, 220, 220)
-    _stacked_graph_x = 600
-    _stacked_graph_y = 300
+    _infected_colour: tuple[int, int, int] = (255, 0, 0)
+    _cured_colour: tuple[int, int, int] = (0, 0, 255)
+    _uninfected_colour: tuple[int, int, int] = (220, 220, 220)
+    _stacked_graph_x: int = 600
+    _stacked_graph_y: int = 300
 
     def __init__(self, total_population: int, g: Graph) -> None:
         self._total_population = total_population
@@ -206,12 +209,9 @@ class StackedAreaGraph:
             percent_infected = current_frame_data[1] / self._total_population
             percent_recovered = current_frame_data[2] / self._total_population
 
-            height_uninfected = math.floor(percent_uninfected *
-                                           STACKED_GRAPH_HEIGHT)
-            height_infected = math.floor(percent_infected *
-                                         STACKED_GRAPH_HEIGHT)
-            height_recovered = math.floor(percent_recovered *
-                                          STACKED_GRAPH_HEIGHT)
+            height_uninfected = math.floor(percent_uninfected * STACKED_GRAPH_HEIGHT)
+            height_infected = math.floor(percent_infected * STACKED_GRAPH_HEIGHT)
+            height_recovered = math.floor(percent_recovered * STACKED_GRAPH_HEIGHT)
 
             while height_uninfected + height_infected + height_recovered < STACKED_GRAPH_HEIGHT:
                 height_uninfected += 1
@@ -327,8 +327,10 @@ class StatsTable:
         # end_position = (position[0] + STATS_W, position[1])
         py.draw.line(screen, self.line_color, position, position2, width=self.border_line_width)
 
-    def check_scroll(self, x, y, dy):
-        """checks if we can scroll"""
+    def check_scroll(self, x: int, y: int, dy: int) -> None:
+        """checks if we can scroll up or down
+        If we can't, then clamp the top row so that we can see at 4 rows
+        """
         if self.pos_x <= x <= self.pos_x + STATS_W and self.pos_y <= y <= self.pos_y + STATS_H:
             # clamps
             self.current_top_row = max(min(self.current_top_row + dy, self.num_families - 4), 0)
@@ -378,8 +380,8 @@ def draw_edge(position1: tuple[int, int], position2: tuple[int, int], colour: tu
 
 
 def draw_text(x: int, y: int, text: str, font_size: int,
-              font_color: tuple[int, int, int]):
-    """draws text
+              font_color: tuple[int, int, int]) -> None:
+    """ Draws text on the screen
 
     Preconditions:
     - SCREEN_HEIGHT >= x >= 0 and SCREEN_WIDTH >= y >= 0
@@ -424,8 +426,8 @@ def update_text_and_graphs(simulation: sim) -> None:
     draw_text(850, 580, 'BROWNIAN', 15, WHITE)
 
 
-def main():
-    """The function that runs the project"""
+def runner() -> None:
+    """The runner function that runs the project"""
     global button_changed
     # Initializes pygame stuff
     py.init()
@@ -532,8 +534,8 @@ def main():
         for b in buttons:
             # updates bounds for initial infected
             if b is inital_infected_b:
-                b.bounds = (
-                    1, int(fam_pop_b.text) * int(fam_b.text) + 1 if fam_pop_b.text != '' and fam_b.text != '' else 1)
+                b.change_bound((
+                    1, int(fam_pop_b.text) * int(fam_b.text) + 1 if fam_pop_b.text != '' and fam_b.text != '' else 1))
                 if b.text != '':
                     b.text = str(
                         min(
@@ -627,11 +629,12 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
-    # import python_ta
-    #
-    # python_ta.check_all(config={
-    #     'extra-imports': [],  # the names (strs) of imported modules
-    #     'allowed-io': [],  # the names (strs) of functions that call print/open/input
-    #     'max-line-length': 120
-    # })
+    runner()
+    import python_ta
+
+    python_ta.check_all(config={
+        'extra-imports': [],  # the names (strs) of imported modules
+        'allowed-io': ['runner'],  # the names (strs) of functions that call print/open/input
+        'disable': ['E9992', 'E9997', 'E1101', 'E9999', 'C0103', 'R0902', 'R0912', 'R0913', 'R0914', 'R1702', 'R0915'],
+        'max-line-length': 120
+    })
