@@ -38,7 +38,7 @@ class Simulation:
     num_family: int
     family_size: int
     frame_num: int
-    infected: set
+    infected: set[Person]
     recover_period: int  # in frames
     brownian: bool
     id_to_family: dict[int, list[Person]]
@@ -87,7 +87,7 @@ class Simulation:
             to_infect.state = INFECTED
 
     def frame(self) -> None:
-        """This fuction update the graph for the next frame. This update incudes the location of all the Person,
+        """This function update the graph for the next frame. This update incudes the location of all the Person,
         the close contact edges, and the states of each Person.
         """
         self.frame_num += 1

@@ -436,7 +436,7 @@ def runner() -> None:
     fam_pop_b = InputButton(215, 580, 60, 25, '5', BLACK, WHITE, True, 'int', (1, 51))
     regen_b = Button(25, 600, 70, 25, 'REGENERATE', WHITE, RED, True)
     fam_b = InputButton(215, 530, 60, 25, '5', BLACK, WHITE, True, 'int', (1, 21))
-    infect_b = InputButton(445, 580, 60, 25, '0.5', BLACK, WHITE, True, 'float', (0.0, 1.0))
+    infect_b = InputButton(445, 580, 60, 25, '0.2', BLACK, WHITE, True, 'float', (0.0, 1.0))
     inital_infected_b = InputButton(445, 530, 60, 25, '1', BLACK, WHITE, True,
                                     'int', (1, int(fam_pop_b.text) * int(fam_b.text) + 1))
     stop_b = Button(25, 565, 70, 25, 'STOP', WHITE, RED, True)
@@ -489,7 +489,7 @@ def runner() -> None:
                 # if statements to check for buttons
                 if active_button is brownian:
                     active_button.background_color = GREEN if active_button.background_color == RED else RED
-                    simulation.brownian = True if active_button.background_color == GREEN else False
+                    simulation.brownian = active_button.background_color == GREEN
                 if active_button is run_b and not is_running:
                     is_running = True
                     if simulation.simu_graph.infected == set():
@@ -556,7 +556,7 @@ def runner() -> None:
                 inital_infected = int(inital_infected_b.text)
                 close_contact_distance = int(close_cont_b.text)
                 simulation = sim(num_families, family_size, speed + 1, int(FPS * recovery), inital_infected,
-                                 close_contact_distance, FPS, infectivity, False)
+                                 close_contact_distance, FPS, infectivity, brownian.background_color == GREEN)
                 main_graph = simulation.simu_graph
                 stacked_graph = StackedAreaGraph(population, main_graph)
                 stats_table = StatsTable(num_families, simulation)
@@ -579,12 +579,12 @@ def runner() -> None:
                 if k.family_id == n.family_id:
                     x = n.location[0]
                     y = n.location[1]
-                    draw_edge((k.location[0] + 25, k.location[1] + 25), (x + 25, y + 25), GREEN)
+                    draw_edge((k.location[0] + 25, k.location[1] + 25), (x + 25, y + 25), WHITE)
         for j in main_graph.infected:
             for m in j.close_contact:
                 x = main_graph.id_to_person[m].location[0]
                 y = main_graph.id_to_person[m].location[1]
-                draw_edge((j.location[0] + 25, j.location[1] + 25), (x + 25, y + 25), WHITE)
+                draw_edge((j.location[0] + 25, j.location[1] + 25), (x + 25, y + 25), RED)
         # Update the main graph nodes
         for j in main_graph.infected:
             x = j.location[0]
