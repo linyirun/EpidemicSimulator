@@ -14,19 +14,19 @@ class Graph:
     """This is the Graph contaning all the Persons in the simulation. The Graph class also keeps track of all the
     Person who are Infected, Susceptible or recovered.
 
-    - Instance Attributes:
-        - infected: a set containing all the Person who are infected.
-        - susceptible: a set containing all the Person who could be infected in future.
-        - recovered: a set containing all the Person who have recovered and can not be infeced again.
-        - id_to_person: a dictionary contanning all the Person with the id of Person as key and Person object as
-        associated values.
-        - infectivity: The rate of infection in the simulation
+    Instance Attributes:
+    - infected: a set containing all the Person who are infected.
+    - susceptible: a set containing all the Person who could be infected in future.
+    - recovered: a set containing all the Person who have recovered and can not be infeced again.
+    - id_to_person: a dictionary contanning all the Person with the id of Person as key and Person object as
+    associated values.
+    - infectivity: The rate of infection in the simulation
 
-    - Representation Invarients:
-        - all(person in self.id_to_person.values() for person in self.infected)
-        - all(person in self.id_to_person.values() for person in self.susceptible)
-        - all(person in self.id_to_person.values() for person in self.recovered)
-        - all(self.id_to_person[identification].id == identification for identification in self.id_to_person)
+    Representation Invarients:
+    - all(person in self.id_to_person.values() for person in self.infected)
+    - all(person in self.id_to_person.values() for person in self.susceptible)
+    - all(person in self.id_to_person.values() for person in self.recovered)
+    - all(self.id_to_person[identification].id == identification for identification in self.id_to_person)
     """
     infected: set[Person]
     susceptible: set[Person]

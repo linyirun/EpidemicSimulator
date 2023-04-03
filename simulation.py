@@ -13,24 +13,25 @@ NODE_RADIUS = 10
 # @check_contracts
 class Simulation:
     """A class represent one backend Simulation
+
     Instance Attributes:
-        - simu_graph: the main graph in this simulation
-        - close_contact_distance: the distance that the two person in this edge will be considered close contact
-        interms of pixles
-        - num_family: number of family in this silulation
-        - family_size: number of Person in one family
-        - frame_num: this records the number of frame that have passed in this simulation
-        - infected: this is a set of people that should be infected in the next frame.
-        - recover_period: after recover_period number of frames a person will recover in this simulation
-        - brownian: If True, people in this simulation move in brownian motions otherwise they randomly move and
-        bounce back when hit a wall.
-        - id_to_family: This is a dictionary with id of a family associated with list of all the person in that family
-        - fps: frames per second in this simulation
+    - simu_graph: the main graph in this simulation
+    - close_contact_distance: the distance that the two person in this edge will be considered close contact
+    interms of pixles
+    - num_family: number of family in this silulation
+    - family_size: number of Person in one family
+    - frame_num: this records the number of frame that have passed in this simulation
+    - infected: this is a set of people that should be infected in the next frame.
+    - recover_period: after recover_period number of frames a person will recover in this simulation
+    - brownian: If True, people in this simulation move in brownian motions otherwise they randomly move and
+    bounce back when hit a wall.
+    - id_to_family: This is a dictionary with id of a family associated with list of all the person in that family
+    - fps: frames per second in this simulation
 
     Representation Invarients:
-        - all(all(person.family_id == family for person in self.id_to_family[family]) for family in self.id_to_family)
-        - frame_num >= 0
-        - len(infected) <= self.num_family*self.family_size
+    - all(all(person.family_id == family for person in self.id_to_family[family]) for family in self.id_to_family)
+    - frame_num >= 0
+    - len(infected) <= self.num_family*self.family_size
 
     """
     simu_graph: Graph

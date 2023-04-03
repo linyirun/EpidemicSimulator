@@ -18,23 +18,23 @@ FAMILY = 8
 class Person:
     """This class is a representation of a person in the square or a node in the graph.
 
-        Instance Attributes:
-        - id: An unique identification of a person.
-        - family_id: An int idication the family the person belongs to
-        - state: The state of a person that tells if he is infected, susceptable or rocovered.
-        - location: The location interms of pixle of a person on the graph
-        - move: How much interms of x and y a person will move in the next frame
-        - close_contact: A dictionary contaning all the close contact perople with self. Key is the id of it's neighbors
-        assciated
-        - family: A dictionary contaning all the Person with the same family as self.
-        - infection_frame: The frame that self is infected, this is None when self is not infected
-        - frames_per_second: The frames/sec for the simulation
-        - last_move: The last move made by the person, used for Brownian motion
+    Instance Attributes:
+    - id: An unique identification of a person.
+    - family_id: An int idication the family the person belongs to
+    - state: The state of a person that tells if he is infected, susceptable or rocovered.
+    - location: The location interms of pixle of a person on the graph
+    - move: How much interms of x and y a person will move in the next frame
+    - close_contact: A dictionary contaning all the close contact perople with self. Key is the id of it's neighbors
+    assciated
+    - family: A dictionary contaning all the Person with the same family as self.
+    - infection_frame: The frame that self is infected, this is None when self is not infected
+    - frames_per_second: The frames/sec for the simulation
+    - last_move: The last move made by the person, used for Brownian motion
 
-        Representation Invariants:
-        - not (self.state is INFECTED) or self.infection_frame is not None
-        - 0 <= self.location[0] <= 500 and 0 <= self.location[1] <= 500
-        """
+    Representation Invariants:
+    - not (self.state is INFECTED) or self.infection_frame is not None
+    - 0 <= self.location[0] <= 500 and 0 <= self.location[1] <= 500
+    """
     id: int
     family_id: int
     state: SUSCEPTIBLE | INFECTED | RECOVERED
@@ -124,18 +124,18 @@ class Edge:
     """This class represent an edge between two people either a family edge or a close ocntact edge depend on the
     family edge of person
 
-    - Representation Invariants:
-        self.person1 is not None and self.person2 is not None
+    Instance Attributes:
+    - person1: the first person
+    - person2: the second person
+
+    Representation Invariants:
+    - self.person1 is not None and self.person2 is not None
     """
     person1: Person
     person2: Person
 
     def __init__(self, first: Person, second: Person) -> None:
         """This inicialize an edge between the given two person.
-
-        Instance Attributes:
-            - person1: a person in the edge
-            - person2: a person in the edge
 
         - Preconditions:
             - first is not None and second is not None
