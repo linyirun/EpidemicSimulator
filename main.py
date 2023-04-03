@@ -491,7 +491,7 @@ def runner() -> None:
                         b.active = True
                         active_button = b
                         break
-                # lol if statements for buttons lol
+                # if statements to check for buttons
                 if active_button is brownian:
                     active_button.background_color = GREEN if active_button.background_color == RED else RED
                     simulation.brownian = True if active_button.background_color == GREEN else False

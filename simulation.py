@@ -1,12 +1,16 @@
+"""
+This file contains the simulation.
+"""
 from __future__ import annotations
 import random
+# from python_ta.contracts import check_contracts
 from graph import Graph
 from person_edge import Person, INFECTED
-import timeit
 
 NODE_RADIUS = 10
 
 
+# @check_contracts
 class Simulation:
     """A class represent one backend Simulation
     Instance Attributes:
@@ -41,7 +45,7 @@ class Simulation:
     fps: int
 
     def __init__(self, num_family: int, family_size: int, speed: int, recover_period: int, initial_infected: int,
-                 close_contact_distance: int, fps: int, brownian: bool = False):
+                 close_contact_distance: int, fps: int, brownian: bool = False) -> None:
         """
         Initialize the simulation class
         Preconditions:
@@ -82,7 +86,7 @@ class Simulation:
             self.simu_graph.infected.add(to_infect)
             to_infect.state = INFECTED
 
-    def frame(self):
+    def frame(self) -> None:
         """This fuction update the graph for the next frame. This update incudes the location of all the Person,
         the close contact edges, and the states of each Person.
         """
@@ -107,11 +111,11 @@ class Simulation:
 
 
 if __name__ == '__main__':
-    x = timeit.timeit()
     import python_ta
 
     python_ta.check_all(config={
         'extra-imports': [],  # the names (strs) of imported modules
         'allowed-io': [],  # the names (strs) of functions that call print/open/input
+        'disable': ['E9999', 'R0902', 'R0913', 'R0914'],
         'max-line-length': 120
     })

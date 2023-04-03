@@ -1,15 +1,23 @@
+"""
+The graph class
+This class stores the people who are uninfected, infected, and recovered, as well
+as a mapping from the person id to the person.
+"""
+
 from __future__ import annotations
+# from python_ta.contracts import check_contracts
 from person_edge import Person, RECOVERED, Edge
 
 
+# @check_contracts
 class Graph:
-    """This is the Graph contaning all the Person in the simulation. The Graph class also keep track of all the
+    """This is the Graph contaning all the Persons in the simulation. The Graph class also keeps track of all the
     Person who are Infected, Susceptible or recovered.
 
     - Instance Attributes:
-        - infected: a set contanning all the Person who are infected.
-        - susceptible: a set contanning all the Person who could be infected in future.
-        - recovered: a set contanning all the Person who have recovered and can not be infeced again.
+        - infected: a set containing all the Person who are infected.
+        - susceptible: a set containing all the Person who could be infected in future.
+        - recovered: a set containing all the Person who have recovered and can not be infeced again.
         - id_to_person: a dictionary contanning all the Person with the id of Person as key and Person object as
         associated values.
 
@@ -21,7 +29,7 @@ class Graph:
     """
     infected: set[Person]
     susceptible: set[Person]
-    recovered = set[Person]
+    recovered: set[Person]
     id_to_person: dict[int, Person]
 
     def __init__(self) -> None:
@@ -52,10 +60,6 @@ class Graph:
             if current_frame - patient.infection_frame > recover_period:
                 patient.state = RECOVERED
                 to_remove.add(patient)
-            # for person_id in patient.family:
-            #     if person_id != patient.id:
-            #         patient.create_close_contact_edge(self.id_to_person[person_id])
-            #
             else:
                 for person in self.susceptible:
                     if ((person.location[0] - patient.location[0]) ** 2 + (
@@ -83,7 +87,6 @@ class Graph:
                 value = edge.infect(close_contact_distance)
                 if value is not None and value.family_id != patient.family_id:
                     newly_infected.add(value)
-        #print(newly_infected)
         return newly_infected
 
 
@@ -93,5 +96,6 @@ if __name__ == '__main__':
     python_ta.check_all(config={
         'extra-imports': [],  # the names (strs) of imported modules
         'allowed-io': [],  # the names (strs) of functions that call print/open/input
+        'disable': ['E9999', 'R1702'],
         'max-line-length': 120
     })
