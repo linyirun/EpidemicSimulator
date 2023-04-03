@@ -434,16 +434,12 @@ def runner() -> None:
     py.font.init()
     # Initializes buttons
     run_b = Button(25, 530, 70, 25, 'RUN', WHITE, RED, True)
-    fam_pop_b = InputButton(215, 580, 60, 25, '5', BLACK, WHITE, True, 'int',
-                            (1, 51))
+    fam_pop_b = InputButton(215, 580, 60, 25, '5', BLACK, WHITE, True, 'int', (1, 51))
     regen_b = Button(25, 600, 70, 25, 'REGENERATE', WHITE, RED, True)
-    fam_b = InputButton(215, 530, 60, 25, '5', BLACK, WHITE, True, 'int',
-                        (1, 21))
-    infect_b = InputButton(445, 580, 60, 25, '0.5', BLACK, WHITE, True,
-                           'float', (0.0, 1.0))
+    fam_b = InputButton(215, 530, 60, 25, '5', BLACK, WHITE, True, 'int', (1, 21))
+    infect_b = InputButton(445, 580, 60, 25, '0.5', BLACK, WHITE, True, 'float', (0.0, 1.0))
     inital_infected_b = InputButton(445, 530, 60, 25, '1', BLACK, WHITE, True,
-                                    'int',
-                                    (1, int(fam_pop_b.text) * int(fam_b.text) + 1))
+                                    'int', (1, int(fam_pop_b.text) * int(fam_b.text) + 1))
     stop_b = Button(25, 565, 70, 25, 'STOP', WHITE, RED, True)
     close_cont_b = InputButton(700, 530, 60, 25, '100', BLACK, WHITE, True, 'int', (1, 1000))
     speed_b = InputButton(700, 580, 60, 25, '5', BLACK, WHITE, True, 'int', (1, 21))
@@ -502,6 +498,11 @@ def runner() -> None:
                 if active_button is regen_b:
                     is_running = False
                     button_changed = True
+                    if not all(button.text != '' for button in buttons if
+                               isinstance(button, InputButton) and button is not brownian):
+                        draw_run_error = True
+                        can_initialize_run = True
+                        is_running = False
             if event.type == py.KEYDOWN and active_button is not None:
                 if event.key == py.K_BACKSPACE:
                     # may need more functionality later
