@@ -187,7 +187,6 @@ class StackedAreaGraph:
 
     def update(self, is_running: bool) -> None:
         """Updates the graph for the current frame, then draw it
-
         """
 
         # Only update if the simulation is currently running
@@ -544,7 +543,7 @@ def runner() -> None:
                             int(fam_pop_b.text) * int(fam_b.text) if
                             fam_pop_b.text != '' and fam_b.text != '' else 1))
             b.update()
-        # always initlialized a new simulatinon if is not running
+        # always initlialized a new simulation if is not running
         if button_changed:
             if all(button.text != '' for button in buttons if
                    isinstance(button, InputButton) and button is not brownian):
@@ -553,10 +552,11 @@ def runner() -> None:
                 population = num_families * family_size
                 speed = int(speed_b.text)
                 recovery = float(recover_period.text)
+                infectivity = float(infect_b.text)
                 inital_infected = int(inital_infected_b.text)
                 close_contact_distance = int(close_cont_b.text)
                 simulation = sim(num_families, family_size, speed + 1, int(FPS * recovery), inital_infected,
-                                 close_contact_distance, FPS, False)
+                                 close_contact_distance, FPS, infectivity, False)
                 main_graph = simulation.simu_graph
                 stacked_graph = StackedAreaGraph(population, main_graph)
                 stats_table = StatsTable(num_families, simulation)
@@ -574,17 +574,17 @@ def runner() -> None:
         if is_running:
             simulation.frame()
         # update main graph edges
-        for j in main_graph.infected:
-            for m in j.close_contact:
-                x = main_graph.id_to_person[m].location[0]
-                y = main_graph.id_to_person[m].location[1]
-                draw_edge((j.location[0] + 25, j.location[1] + 25), (x + 25, y + 25), WHITE)
         for k in main_graph.id_to_person.values():
             for n in main_graph.id_to_person.values():
                 if k.family_id == n.family_id:
                     x = n.location[0]
                     y = n.location[1]
-                    draw_edge((k.location[0] + 25, k.location[1] + 25), (x + 25, y + 25), WHITE)
+                    draw_edge((k.location[0] + 25, k.location[1] + 25), (x + 25, y + 25), GREEN)
+        for j in main_graph.infected:
+            for m in j.close_contact:
+                x = main_graph.id_to_person[m].location[0]
+                y = main_graph.id_to_person[m].location[1]
+                draw_edge((j.location[0] + 25, j.location[1] + 25), (x + 25, y + 25), WHITE)
         # Update the main graph nodes
         for j in main_graph.infected:
             x = j.location[0]
@@ -631,11 +631,11 @@ def runner() -> None:
 
 if __name__ == "__main__":
     runner()
-    import python_ta
-
-    python_ta.check_all(config={
-        'extra-imports': [],  # the names (strs) of imported modules
-        'allowed-io': ['runner'],  # the names (strs) of functions that call print/open/input
-        'disable': ['E9992', 'E9997', 'E1101', 'E9999', 'C0103', 'R0902', 'R0912', 'R0913', 'R0914', 'R1702', 'R0915'],
-        'max-line-length': 120
-    })
+    # import python_ta
+    #
+    # python_ta.check_all(config={
+    #     'extra-imports': [],  # the names (strs) of imported modules
+    #     'allowed-io': ['runner'],  # the names (strs) of functions that call print/open/input
+    #     'disable': ['E9992', 'E9997', 'E1101', 'E9999', 'C0103', 'R0902', 'R0912', 'R0913', 'R0914', 'R1702', 'R0915'],
+    #     'max-line-length': 120
+    # })

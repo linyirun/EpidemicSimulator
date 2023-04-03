@@ -20,6 +20,7 @@ class Graph:
         - recovered: a set containing all the Person who have recovered and can not be infeced again.
         - id_to_person: a dictionary contanning all the Person with the id of Person as key and Person object as
         associated values.
+        - infectivity: The rate of infection in the simulation
 
     - Representation Invarients:
         - all(person in self.id_to_person.values() for person in self.infected)
@@ -31,13 +32,15 @@ class Graph:
     susceptible: set[Person]
     recovered: set[Person]
     id_to_person: dict[int, Person]
+    infectivity: float
 
-    def __init__(self) -> None:
+    def __init__(self, infectivity: float) -> None:
         """This function inicilize the Graph class by making it to an empty graph."""
         self.infected = set()
         self.susceptible = set()
         self.recovered = set()
         self.id_to_person = {}
+        self.infectivity = infectivity
 
     def build_family_edge(self, person1: Person, person2: Person) -> None:
         """This fucntion build an family edge between person1 and person2.
@@ -63,7 +66,8 @@ class Graph:
             else:
                 for person in self.susceptible:
                     if ((person.location[0] - patient.location[0]) ** 2 + (
-                            person.location[1] - patient.location[1]) ** 2) ** 0.5 < close_contact_distance:
+                            person.location[1] - patient.location[1]) ** 2) ** 0.5 < close_contact_distance or \
+                            person.family_id == patient.family_id:
                         patient.create_close_contact_edge(person)
 
         for patient in to_remove:
@@ -80,11 +84,11 @@ class Graph:
         newly_infected = set()
         for patient in self.infected:
             for family_edge in patient.family.values():
-                potencial_infect = family_edge.infect(close_contact_distance)
+                potencial_infect = family_edge.infect(close_contact_distance, self.infectivity)
                 if potencial_infect is not None:
                     newly_infected.add(potencial_infect)
             for edge in patient.close_contact.values():
-                value = edge.infect(close_contact_distance)
+                value = edge.infect(close_contact_distance, self.infectivity)
                 if value is not None and value.family_id != patient.family_id:
                     newly_infected.add(value)
         return newly_infected

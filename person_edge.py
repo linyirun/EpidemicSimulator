@@ -144,7 +144,7 @@ class Edge:
         self.person1 = first
         self.person2 = second
 
-    def infect(self, close_contact_distance: int) -> Optional[Person]:
+    def infect(self, close_contact_distance: int, infectivity: float) -> Optional[Person]:
         """ This function have a chance of retuning a person who should be infected in self if one gets infected.
         This function will not return a person if none of the two person in self are infected. The chances of infection
         depend on if the two person are in the same family or if they are close contact.
@@ -159,15 +159,14 @@ class Edge:
                 self.person1.state == SUSCEPTIBLE and self.person2.state == INFECTED):
             # Separate check for people in the same family
             if self.person1.family_id == self.person2.family_id:
-                if random.random() <= 1:
+                if random.random() <= infectivity / 100:
                     return self.get_infected_person()
                 else:
                     return None
             else:
                 distance = ((self.person1.location[0] - self.person2.location[0]) ** 2 + (
                             self.person1.location[1] - self.person2.location[1]) ** 2) ** 0.5
-                factor = 0.5
-                chance = 0.1 - ((close_contact_distance - distance) / close_contact_distance) ** 2 * factor
+                chance = infectivity - ((close_contact_distance - distance) / close_contact_distance) ** 2
                 if random.random() < chance:
                     return self.get_infected_person()
                 else:

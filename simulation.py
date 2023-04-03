@@ -45,14 +45,14 @@ class Simulation:
     fps: int
 
     def __init__(self, num_family: int, family_size: int, speed: int, recover_period: int, initial_infected: int,
-                 close_contact_distance: int, fps: int, brownian: bool = False) -> None:
+                 close_contact_distance: int, fps: int, infectivity: float, brownian: bool = False) -> None:
         """
         Initialize the simulation class
         Preconditions:
             - initial_infected <= num_family * family_size
         """
         self.recover_period = recover_period
-        self.simu_graph = Graph()
+        self.simu_graph = Graph(infectivity)
         self.infected = set()
         self.frame_num = 0
         self.num_family = num_family
