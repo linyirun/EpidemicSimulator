@@ -72,7 +72,7 @@ class Person:
         x, y = self.location
         dx, dy = random.uniform(-1, 1), random.uniform(-1, 1)
         magnitude = (dx ** 2 + dy ** 2) ** 0.5  # magnitude of movement vector
-        if magnitude == 0:
+        if magnitude != 0:
             dx, dy = dx / magnitude, dy / magnitude  # normalize the vector to a unit vector
         distance_moved = self.speed / self.frames_per_second
         dx, dy = dx * distance_moved, dy * distance_moved  # multiply by distance moved
